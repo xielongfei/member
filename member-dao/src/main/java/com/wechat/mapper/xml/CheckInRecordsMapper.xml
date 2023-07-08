@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wechat.mapper.CheckInRecordsMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.wechat.entity.CheckInRecords">
+        <id column="id" property="id" />
+        <result column="member_id" property="memberId" />
+        <result column="check_in_date" property="checkInDate" />
+        <result column="consecutive_check_ins" property="consecutiveCheckIns" />
+        <result column="warning_status" property="warningStatus" />
+        <result column="create_date" property="createDate" />
+        <result column="update_date" property="updateDate" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, member_id, check_in_date, consecutive_check_ins, warning_status, create_date, update_date
+    </sql>
+
+</mapper>

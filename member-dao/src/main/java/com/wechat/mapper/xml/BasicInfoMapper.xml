@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.wechat.mapper.BasicInfoMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.wechat.entity.BasicInfo">
+        <id column="id" property="id" />
+        <result column="customer_phone" property="customerPhone" />
+        <result column="material_contact_name" property="materialContactName" />
+        <result column="material_contact_phone" property="materialContactPhone" />
+        <result column="material_contact_qr_code" property="materialContactQrCode" />
+        <result column="create_date" property="createDate" />
+        <result column="update_date" property="updateDate" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, customer_phone, material_contact_name, material_contact_phone, material_contact_qr_code, create_date, update_date
+    </sql>
+
+</mapper>

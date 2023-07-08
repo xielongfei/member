@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="mapper.MembersMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.wechat.entity.Members">
+        <id column="id" property="id" />
+        <result column="name" property="name" />
+        <result column="join_date" property="joinDate" />
+        <result column="shop_id" property="shopId" />
+        <result column="referral_id" property="referralId" />
+        <result column="member_type_id" property="memberTypeId" />
+        <result column="member_type_name" property="memberTypeName" />
+        <result column="id_card" property="idCard" />
+        <result column="phone" property="phone" />
+        <result column="province" property="province" />
+        <result column="city" property="city" />
+        <result column="county" property="county" />
+        <result column="address" property="address" />
+        <result column="full_address" property="fullAddress" />
+        <result column="latitude" property="latitude" />
+        <result column="longitude" property="longitude" />
+        <result column="delete_status" property="deleteStatus" />
+        <result column="file_path" property="filePath" />
+        <result column="create_date" property="createDate" />
+        <result column="update_date" property="updateDate" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, name, join_date, shop_id, referral_id, member_type_id, member_type_name, id_card, phone, province, city, county, address, full_address, latitude, longitude, delete_status, file_path, create_date, update_date
+    </sql>
+
+</mapper>

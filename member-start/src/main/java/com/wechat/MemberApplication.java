@@ -1,0 +1,25 @@
+package com.wechat;
+
+import com.wechat.jwt.JwtAuthenticationTokenFilter;
+import org.mybatis.spring.annotation.MapperScan;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.context.annotation.Bean;
+
+@SpringBootApplication(scanBasePackages = { "com.wechat"}, exclude={RedisAutoConfiguration.class})
+@MapperScan("com.wechat.mapper")
+public class MemberApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(MemberApplication.class, args);
+    }
+
+    @Bean
+    public FilterRegistrationBean registration(JwtAuthenticationTokenFilter filter) {
+        FilterRegistrationBean registration = new FilterRegistrationBean(filter);
+        registration.setEnabled(false);
+        return registration;
+    }
+}
