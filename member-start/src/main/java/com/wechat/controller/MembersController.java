@@ -1,17 +1,24 @@
 package com.wechat.controller;
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.wechat.entity.Members;
 import com.wechat.entity.request.MembersRequest;
 import com.wechat.jwt.JwtTokenUtils;
+import com.wechat.result.Response;
+import com.wechat.result.ResultCode;
 import com.wechat.service.IMembersService;
 import com.wechat.service.ISmsService;
+import com.wechat.sms.CacheUtil;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * <p>
@@ -38,22 +45,29 @@ public class MembersController {
     }
 
     @ApiOperation("登录授权")
-    @GetMapping(value = "/login")
-    public String login(String user,String password){
-        Map map = new HashMap();
-        map.put("user",user);
-        map.put("password",password);
-        return jwtTokenUtils.createToken(map);
+    @PostMapping(value = "/login")
+    public Object login(@RequestBody MembersRequest membersRequest){
+        String code = CacheUtil.cache.getIfPresent(membersRequest.getPhone());
+//        if (!Objects.equals(code, verificationCode)) {
+//            return Response.failure(ResultCode.UNAUTHORIZED);
+//        }
+        Members members = membersService.getOne(Wrappers.<Members>lambdaQuery().eq(Members::getPhone, membersRequest.getPhone()));
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("member", members);
+        String token = jwtTokenUtils.createToken(claims);
+        claims.put("token", token);
+        claims.put("auth", "");
+        return Response.success(claims);
     }
 
     @ApiOperation("发送验证码")
     @PostMapping("/sendCode")
-    public Object sendCode(String phoneNumber) {
-        boolean isSend = smsService.send(phoneNumber);
+    public Object sendCode(@RequestBody Members members) {
+        boolean isSend = smsService.send(members.getPhone());
         if (isSend){
-            return "success";
+            return Response.success();
         } else {
-            return "短信发送失败！";
+            return Response.failure(ResultCode.BAD_REQUEST);
         }
     }
 
@@ -67,6 +81,8 @@ public class MembersController {
     @ApiOperation(value = "查会员列表")
     @GetMapping(value = "/list")
     public Object list() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Members members = (Members)authentication.getPrincipal();
         List<Members> list = membersService.list();
         return list;
     }

@@ -88,7 +88,7 @@ public class WebSecurityConfig {
                 .requestMatchers(HttpMethod.OPTIONS, "/*").permitAll()
 
                 //允许匿名及登录用户访问
-                .requestMatchers("/members/login/**", "/error/*").permitAll()
+                .requestMatchers("/members/login", "/members/sendCode", "/error/*").permitAll()
                 // 所有请求都需要认证
                 .anyRequest().authenticated();
 

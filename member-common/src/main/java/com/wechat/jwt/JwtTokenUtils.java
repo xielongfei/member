@@ -45,14 +45,14 @@ public class JwtTokenUtils implements InitializingBean {
     }
 
 
-    public  String createToken (Map<String, Object> claims) {
+    public String createToken(Map<String, Object> claims) {
         return jwtSecurityProperties.getTokenStartWith() + Jwts.builder()
                 .claim(AUTHORITIES_KEY, claims)
                 .setId(UUID.randomUUID().toString())
                 .setIssuedAt(new Date())
                 .setExpiration(new Date((new Date()).getTime() + jwtSecurityProperties.getTokenValidityInSeconds()))
                 .compressWith(CompressionCodecs.DEFLATE)
-                .signWith(key,SignatureAlgorithm.HS512)
+                .signWith(key, SignatureAlgorithm.HS512)
                 .compact();
     }
 
@@ -69,22 +69,16 @@ public class JwtTokenUtils implements InitializingBean {
 
     public Authentication getAuthentication(String token) {
         Claims claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
-//        Claims claims = Jwts.parser()
-//                .setSigningKey(key)
-//                .parseClaimsJws(token)
-//                .getBody();
 
         Collection<? extends GrantedAuthority> authorities =
                 Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(","))
                         .map(SimpleGrantedAuthority::new)
                         .collect(Collectors.toList());
 
-        HashMap map =(HashMap) claims.get("auth");
+        Map<String, Object> map = (Map)claims.get(AUTHORITIES_KEY);
+        Members members = (Members)map.get("member");
 
-        //Members principal = new Members(map.get("user").toString(), map.get("password").toString(), authorities);
-        Members principal = new Members();
-
-        return new UsernamePasswordAuthenticationToken(principal, token, authorities);
+        return new UsernamePasswordAuthenticationToken(members, token, authorities);
     }
 
     public boolean validateToken(String authToken) {
@@ -112,10 +106,6 @@ public class JwtTokenUtils implements InitializingBean {
         Claims claims;
         try {
             claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
-//            claims = Jwts.parser()
-//                    .setSigningKey(key)
-//                    .parseClaimsJws(token)
-//                    .getBody();
         } catch (Exception e) {
             claims = null;
         }

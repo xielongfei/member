@@ -1,6 +1,6 @@
 package com.wechat.entity.request;
 
-import com.baomidou.mybatisplus.annotation.TableField;
+import com.wechat.entity.Members;
 import lombok.Data;
 
 /**
@@ -9,7 +9,7 @@ import lombok.Data;
  * @description:
  */
 @Data
-public class MembersRequest {
+public class MembersRequest extends Members {
 
     /**
      * 商铺编号A
@@ -20,4 +20,9 @@ public class MembersRequest {
      * 商铺编号B
      */
     private String shopIdB;
+
+    /**
+     * 验证码
+     */
+    private String verificationCode;
 }

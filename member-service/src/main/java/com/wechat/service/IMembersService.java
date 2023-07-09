@@ -3,6 +3,7 @@ package com.wechat.service;
 import com.wechat.entity.Members;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.wechat.entity.request.MembersRequest;
+import com.wechat.result.Result;
 
 /**
  * <p>
@@ -19,7 +20,7 @@ public interface IMembersService extends IService<Members> {
      * @param members
      * @return
      */
-    boolean add(Members members);
+    Result add(Members members);
 
     /**
      * 移除会员

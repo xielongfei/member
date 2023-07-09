@@ -1,7 +1,6 @@
 package com.wechat.controller;
 
 import com.wechat.entity.CheckInRecords;
-import com.wechat.entity.Members;
 import com.wechat.entity.response.CheckInStat;
 import com.wechat.service.ICheckInRecordsService;
 import io.swagger.annotations.ApiOperation;

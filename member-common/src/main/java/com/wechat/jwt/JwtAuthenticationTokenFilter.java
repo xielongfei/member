@@ -52,6 +52,5 @@ public class JwtAuthenticationTokenFilter extends OncePerRequestFilter {
             log.debug("no valid JWT token found, uri: {}", requestRri);
         }
         filterChain.doFilter(httpServletRequest, httpServletResponse);
-
     }
 }

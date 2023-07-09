@@ -30,7 +30,7 @@ public class BasicInfoController {
         return basicInfo;
     }
 
-    @ApiOperation(value = "更新基础信息")
+    @ApiOperation(value = "新增/更新基础信息")
     @PostMapping(value = "/update")
     public Object update(@RequestBody BasicInfo basicInfo) {
         LambdaQueryWrapper wrapper = Wrappers.<BasicInfo>lambdaQuery()
