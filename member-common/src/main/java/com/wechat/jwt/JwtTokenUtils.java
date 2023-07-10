@@ -1,8 +1,12 @@
 package com.wechat.jwt;
 
+import com.alibaba.fastjson2.JSON;
 import com.wechat.entity.Members;
+import com.wechat.util.JacksonProvider;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.jackson.io.JacksonDeserializer;
+import io.jsonwebtoken.jackson.io.JacksonSerializer;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.InitializingBean;
@@ -45,8 +49,9 @@ public class JwtTokenUtils implements InitializingBean {
     }
 
 
-    public String createToken(Map<String, Object> claims) {
+    public String createToken(Object claims) {
         return jwtSecurityProperties.getTokenStartWith() + Jwts.builder()
+                .serializeToJsonWith(new JacksonSerializer<>(JacksonProvider.DEFAULT_OBJECT_MAPPER))
                 .claim(AUTHORITIES_KEY, claims)
                 .setId(UUID.randomUUID().toString())
                 .setIssuedAt(new Date())
@@ -68,7 +73,9 @@ public class JwtTokenUtils implements InitializingBean {
     }
 
     public Authentication getAuthentication(String token) {
-        Claims claims = Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
+        Claims claims = Jwts.parserBuilder()
+                .deserializeJsonWith(new JacksonDeserializer<>(JacksonProvider.DEFAULT_OBJECT_MAPPER))
+                .setSigningKey(key).build().parseClaimsJws(token).getBody();
 
         Collection<? extends GrantedAuthority> authorities =
                 Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(","))
@@ -76,7 +83,7 @@ public class JwtTokenUtils implements InitializingBean {
                         .collect(Collectors.toList());
 
         Map<String, Object> map = (Map)claims.get(AUTHORITIES_KEY);
-        Members members = (Members)map.get("member");
+        Members members = JSON.to(Members.class, map);
 
         return new UsernamePasswordAuthenticationToken(members, token, authorities);
     }

@@ -9,6 +9,7 @@ import com.wechat.result.ResultCode;
 import com.wechat.service.IMembersService;
 import com.wechat.service.ISmsService;
 import com.wechat.sms.CacheUtil;
+import com.wechat.util.MenuUtil;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -48,15 +49,15 @@ public class MembersController {
     @PostMapping(value = "/login")
     public Object login(@RequestBody MembersRequest membersRequest){
         String code = CacheUtil.cache.getIfPresent(membersRequest.getPhone());
-//        if (!Objects.equals(code, verificationCode)) {
-//            return Response.failure(ResultCode.UNAUTHORIZED);
-//        }
+        if (!Objects.equals(code, membersRequest.getVerificationCode())) {
+            return Response.failure(ResultCode.UNAUTHORIZED);
+        }
         Members members = membersService.getOne(Wrappers.<Members>lambdaQuery().eq(Members::getPhone, membersRequest.getPhone()));
         Map<String, Object> claims = new HashMap<>();
         claims.put("member", members);
-        String token = jwtTokenUtils.createToken(claims);
+        String token = jwtTokenUtils.createToken(members);
         claims.put("token", token);
-        claims.put("auth", "");
+        claims.put("auth", MenuUtil.menuMap.get(members.getMemberTypeId()));
         return Response.success(claims);
     }
 
@@ -74,17 +75,17 @@ public class MembersController {
     @ApiOperation(value = "查单个会员")
     @GetMapping(value = "/getOne")
     public Object getOne(Members members) {
-        Members dbMembers = membersService.getById(members.getId());
-        return dbMembers;
+        Members memberDB = membersService.getById(members.getId());
+        return Response.success(memberDB);
     }
 
     @ApiOperation(value = "查会员列表")
     @GetMapping(value = "/list")
     public Object list() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Members members = (Members)authentication.getPrincipal();
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        Members members = (Members)authentication.getPrincipal();
         List<Members> list = membersService.list();
-        return list;
+        return Response.success(list);
     }
 
     @ApiOperation(value = "新增会员")
@@ -96,13 +97,14 @@ public class MembersController {
     @ApiOperation(value = "更新会员")
     @PostMapping(value = "/update")
     public Object update(@RequestBody Members members) {
-        return membersService.updateById(members);
+        membersService.updateById(members);
+        return Response.success();
     }
 
     @ApiOperation(value = "查会员距离")
     @GetMapping(value = "/distance")
     public Object getDistance(MembersRequest membersRequest) {
         String distance = membersService.getDistance(membersRequest);
-        return distance;
+        return Response.success(distance);
     }
 }

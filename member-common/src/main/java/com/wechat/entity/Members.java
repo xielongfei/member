@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -57,13 +58,13 @@ public class Members implements Serializable {
     private String referralId;
 
     /**
-     * 会员类型ID
+     * 会员类型ID（1: 白银会员, 2: 黄金会员, 3: 钻石会员, 4: 超级管理员）
      */
     @TableField("member_type_id")
     private Integer memberTypeId;
 
     /**
-     * 会员类型名称（白银、金牌、铂金、超级）
+     * 会员类型名称
      */
     @TableField("member_type_name")
     private String memberTypeName;

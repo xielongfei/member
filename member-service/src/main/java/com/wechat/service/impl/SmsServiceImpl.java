@@ -8,6 +8,7 @@ import com.tencentcloudapi.sms.v20210111.SmsClient;
 import com.tencentcloudapi.sms.v20210111.models.SendSmsRequest;
 import com.tencentcloudapi.sms.v20210111.models.SendSmsResponse;
 import com.wechat.service.ISmsService;
+import com.wechat.sms.CacheUtil;
 import com.wechat.sms.SmsProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,7 +17,6 @@ import org.springframework.util.StringUtils;
 import java.util.Random;
 
 /**
- * @author: xielongfei
  * @date: 2023/07/08
  * @description:
  */
@@ -27,11 +27,13 @@ public class SmsServiceImpl implements ISmsService {
     SmsProperties smsProperties;
 
     @Override
-    public boolean send(String phoneNumber) {
+    public boolean send(String phone) {
         //判断手机号是否为空
-        if (StringUtils.isEmpty(phoneNumber)) {
+        if (!StringUtils.hasLength(phone)) {
             return false;
         }
+        //String value = cache.getIfPresent(phoneNumber);
+
         try {
             // 实例化一个认证对象，入参需要传入腾讯云账户secretId，secretKey,此处还需注意密钥对的保密
             // 密钥可前往https://console.cloud.tencent.com/cam/capi网站进行获取
@@ -55,7 +57,7 @@ public class SmsServiceImpl implements ISmsService {
 //            req.setSessionContext(sessionContext);
 
             //设置发送相关的参数
-            String[] phoneNumberSet1 = {"+86" + phoneNumber};
+            String[] phoneNumberSet1 = {"+86" + phone};
             req.setPhoneNumberSet(phoneNumberSet1);//发送的手机号
             //生成6位数随机验证码
             String verificationCode = String.format("%06d", new Random().nextInt(1000000));
@@ -67,6 +69,9 @@ public class SmsServiceImpl implements ISmsService {
             System.out.println("resp" + resp);
             // 输出json格式的字符串回包
             System.out.println(SendSmsResponse.toJsonString(resp));
+
+            CacheUtil.cache.put(phone, verificationCode);
+
             //将验证码放入redis中
 //            redisService.setCacheObject(VERIFICATION_CODE + phoneNumber, verificationCode, 60*5L, TimeUnit.SECONDS);
             return true;
@@ -75,4 +80,5 @@ public class SmsServiceImpl implements ISmsService {
             return false;
         }
     }
+
 }

@@ -15,7 +15,7 @@ server:
 
 #jwt
 jwt:
-  header: Authorization
+  header: token
   # 令牌前缀
   token-start-with: Bearer
   # 使用Base64对该令牌进行编码
@@ -28,14 +28,14 @@ tencent:
   sms:
     #腾讯云短信服务参数
     #腾讯云账户secretId，secretKey
-    secretId:
-    secretKey:
+    secretId: AKIDTq3e3FErFVZPyMakngOwSgt2lMqCII9s
+    secretKey: nRwIW7qSvFQPCmBPQDpJchZHm6C4jBPV
     #短信签名内容: 使用 UTF-8 编码，必须填写已审核通过的签名
-    signName:
+    signName: '盛唐Dev个人公众号'
     #短信应用ID: 短信SdkAppId在 [短信控制台] 添加应用后生成的实际SdkAppId
     sdkAppId: 1400837331
     #模板 ID: 必须填写已审核通过的模板 ID
-    templateId:
+    templateId: 1858174
 
 mybatis-plus:
   mapper-locations: classpath*:com/wechat/mapper/xml/*.xml
