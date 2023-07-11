@@ -16,6 +16,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -90,8 +91,13 @@ public class MembersController {
 
     @ApiOperation(value = "新增会员")
     @PostMapping(value = "/add")
-    public Object add(@RequestBody Members members) {
-        return membersService.add(members);
+    public Object add(@RequestBody Members members) throws IOException {
+        boolean bool = membersService.add(members);
+        if (bool) {
+            return Response.success();
+        } else {
+            return Response.failure(ResultCode.PARAMS_IS_INVALID);
+        }
     }
 
     @ApiOperation(value = "更新会员")

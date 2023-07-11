@@ -5,9 +5,6 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.wechat.entity.Members;
 import com.wechat.entity.request.MembersRequest;
 import com.wechat.mapper.MembersMapper;
-import com.wechat.result.Response;
-import com.wechat.result.Result;
-import com.wechat.result.ResultCode;
 import com.wechat.service.IMembersService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
@@ -24,24 +21,16 @@ import org.springframework.stereotype.Service;
 public class MembersServiceImpl extends ServiceImpl<MembersMapper, Members> implements IMembersService {
 
     @Override
-    public Result add(Members members) {
+    public boolean add(Members members){
         LambdaQueryWrapper wrapper = Wrappers.<Members>lambdaQuery()
                 .eq(Members::getPhone, members.getPhone())
                 .or().eq(Members::getIdCard, members.getIdCard());
         Members membersDB = super.getOne(wrapper);
         if (membersDB != null) {
-            return Response.failure(ResultCode.PARAMS_IS_INVALID);
+            return false;
         }
-
         members.setDeleteStatus(0);
-        //写入照片路径
-        members.setFilePath("/tmp");
-        boolean bool = super.save(members);
-        if (bool) {
-            return Response.success();
-        } else {
-            return Response.failure(ResultCode.PARAMS_IS_INVALID);
-        }
+        return super.save(members);
     }
 
     @Override

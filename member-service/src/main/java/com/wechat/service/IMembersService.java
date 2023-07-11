@@ -4,6 +4,10 @@ import com.wechat.entity.Members;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.wechat.entity.request.MembersRequest;
 import com.wechat.result.Result;
+import org.springframework.core.io.Resource;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 /**
  * <p>
@@ -20,7 +24,8 @@ public interface IMembersService extends IService<Members> {
      * @param members
      * @return
      */
-    Result add(Members members);
+    boolean add(Members members);
+
 
     /**
      * 移除会员

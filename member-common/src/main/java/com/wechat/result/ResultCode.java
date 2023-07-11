@@ -12,7 +12,7 @@ public enum ResultCode {
     //FAIL(400, "失败"),//失败
     BAD_REQUEST(400, "Bad Request"),
     UNAUTHORIZED(401, "认证失败"),//未认证
-    NOT_FOUND(404, "接口不存在"),//接口不存在
+    NOT_FOUND(404, "不存在"),//不存在
     INTERNAL_SERVER_ERROR(500, "系统繁忙"),//服务器内部错误
     METHOD_NOT_ALLOWED(405,"方法不被允许"),
 
