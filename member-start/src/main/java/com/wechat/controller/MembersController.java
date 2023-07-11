@@ -50,9 +50,9 @@ public class MembersController {
     @PostMapping(value = "/login")
     public Object login(@RequestBody MembersRequest membersRequest){
         String code = CacheUtil.cache.getIfPresent(membersRequest.getPhone());
-        if (!Objects.equals(code, membersRequest.getVerificationCode())) {
-            return Response.failure(ResultCode.UNAUTHORIZED);
-        }
+//        if (!Objects.equals(code, membersRequest.getVerificationCode())) {
+//            return Response.failure(ResultCode.UNAUTHORIZED);
+//        }
         Members members = membersService.getOne(Wrappers.<Members>lambdaQuery().eq(Members::getPhone, membersRequest.getPhone()));
         Map<String, Object> claims = new HashMap<>();
         claims.put("member", members);

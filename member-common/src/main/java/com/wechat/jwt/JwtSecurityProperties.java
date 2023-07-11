@@ -28,6 +28,6 @@ public class JwtSecurityProperties {
 
     /**返回令牌前缀 */
     public String getTokenStartWith() {
-        return tokenStartWith + " ";
+        return tokenStartWith + "_";
     }
 }

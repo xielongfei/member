@@ -10,6 +10,7 @@ import com.tencentcloudapi.sms.v20210111.models.SendSmsResponse;
 import com.wechat.service.ISmsService;
 import com.wechat.sms.CacheUtil;
 import com.wechat.sms.SmsProperties;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -21,6 +22,7 @@ import java.util.Random;
  * @description:
  */
 @Service
+@Slf4j
 public class SmsServiceImpl implements ISmsService {
 
     @Autowired
@@ -66,9 +68,8 @@ public class SmsServiceImpl implements ISmsService {
             //发送短信
             // 返回的resp是一个SendSmsResponse的实例，与请求对象对应
             SendSmsResponse resp = client.SendSms(req);
-            System.out.println("resp" + resp);
             // 输出json格式的字符串回包
-            System.out.println(SendSmsResponse.toJsonString(resp));
+            log.info("验证码：{}，响应体：{}", verificationCode, SendSmsResponse.toJsonString(resp));
 
             CacheUtil.cache.put(phone, verificationCode);
 
