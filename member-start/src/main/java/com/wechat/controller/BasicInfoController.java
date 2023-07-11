@@ -3,6 +3,7 @@ package com.wechat.controller;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.wechat.entity.BasicInfo;
+import com.wechat.result.Response;
 import com.wechat.service.IBasicInfoService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +28,7 @@ public class BasicInfoController {
     @GetMapping(value = "/getOne")
     public Object getOne(BasicInfo basicInfoRequest) {
         BasicInfo basicInfo = basicInfoService.getById(basicInfoRequest.getId());
-        return basicInfo;
+        return Response.success(basicInfo);
     }
 
     @ApiOperation(value = "新增/更新基础信息")
@@ -40,7 +41,8 @@ public class BasicInfoController {
         if (dbInfo != null) {
             basicInfo.setId(dbInfo.getId());
         }
-        return basicInfoService.saveOrUpdate(basicInfo);
+        basicInfoService.saveOrUpdate(basicInfo);
+        return Response.success();
     }
 
 }

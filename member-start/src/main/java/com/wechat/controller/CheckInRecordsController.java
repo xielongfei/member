@@ -2,6 +2,7 @@ package com.wechat.controller;
 
 import com.wechat.entity.CheckInRecords;
 import com.wechat.entity.response.CheckInStat;
+import com.wechat.result.Response;
 import com.wechat.service.ICheckInRecordsService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,13 +26,14 @@ public class CheckInRecordsController {
     @ApiOperation(value = "打卡")
     @PostMapping(value = "/checkIn")
     public Object checkIn(@RequestBody CheckInRecords checkInRecords) {
-        return checkInRecordsService.save(checkInRecords);
+        checkInRecordsService.save(checkInRecords);
+        return Response.success();
     }
 
     @ApiOperation(value = "统计会员打卡次数")
     @GetMapping(value = "/countMemberCheckIn")
     public Object countMemberCheckIn(CheckInRecords checkInRecords) {
         CheckInStat checkInStat = checkInRecordsService.getCheckInStat(checkInRecords.getMemberId());
-        return checkInStat;
+        return Response.success(checkInStat);
     }
 }
