@@ -54,6 +54,36 @@ public class CheckInRecords implements Serializable {
     @TableField("warning_status")
     private Integer warningStatus;
 
+    /**
+     * 省
+     */
+    @TableField("province")
+    private String province;
+
+    /**
+     * 市
+     */
+    @TableField("city")
+    private String city;
+
+    /**
+     * 区/县
+     */
+    @TableField("county")
+    private String county;
+
+    /**
+     * 详细地址
+     */
+    @TableField("address")
+    private String address;
+
+    /**
+     * 完整地址，包括省、市、区和详细地址的组合
+     */
+    @TableField("full_address")
+    private String fullAddress;
+
     @TableField("create_date")
     private LocalDateTime createDate;
 

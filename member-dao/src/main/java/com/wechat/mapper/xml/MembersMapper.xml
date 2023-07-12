@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="mapper.MembersMapper">
+<mapper namespace="com.wechat.mapper.MembersMapper">
 
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.wechat.entity.Members">
@@ -30,5 +30,64 @@
     <sql id="Base_Column_List">
         id, name, join_date, shop_id, referral_id, member_type_id, member_type_name, id_card, phone, province, city, county, address, full_address, latitude, longitude, delete_status, file_path, create_date, update_date
     </sql>
+
+    <select id="getAllMembersWithCheckInStatus" resultType="com.wechat.entity.request.MembersResponse">
+        SELECT
+            m.id,
+            m. NAME,
+            m.shop_id,
+            m.province,
+            m.city,
+            m.county,
+            m.address,
+            m.full_address,
+            m.file_path,
+            CASE
+                WHEN c.check_in_date IS NOT NULL THEN
+                    1
+                ELSE
+                    2
+                END AS check_in_status
+        FROM
+            members m
+                LEFT JOIN check_in_records c ON m.id = c.member_id
+                AND DATE(c.check_in_date) = CURDATE()
+    </select>
+
+    <select id="getCheckedInMembers" resultType="com.wechat.entity.request.MembersResponse">
+        SELECT
+            m.id,
+            m. NAME,
+            m.shop_id,
+            m.province,
+            m.city,
+            m.county,
+            m.address,
+            m.full_address,
+            m.file_path,
+            1 AS check_in_status
+        FROM
+            members m
+                INNER JOIN check_in_records c ON m.id = c.member_id
+    </select>
+
+    <select id="getNotCheckedInMembers" resultType="com.wechat.entity.request.MembersResponse">
+        SELECT
+            m.id,
+            m. NAME,
+            m.shop_id,
+            m.province,
+            m.city,
+            m.county,
+            m.address,
+            m.full_address,
+            m.file_path,
+            2 AS check_in_status
+        FROM
+            members m
+                LEFT JOIN check_in_records c ON m.id = c.member_id
+        WHERE
+            c.member_id IS NULL
+    </select>
 
 </mapper>

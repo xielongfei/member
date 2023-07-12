@@ -9,6 +9,11 @@
         <result column="check_in_date" property="checkInDate" />
         <result column="consecutive_check_ins" property="consecutiveCheckIns" />
         <result column="warning_status" property="warningStatus" />
+        <result column="province" property="province" />
+        <result column="city" property="city" />
+        <result column="county" property="county" />
+        <result column="address" property="address" />
+        <result column="full_address" property="fullAddress" />
         <result column="create_date" property="createDate" />
         <result column="update_date" property="updateDate" />
     </resultMap>

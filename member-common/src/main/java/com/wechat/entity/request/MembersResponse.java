@@ -13,7 +13,7 @@ import org.springframework.core.io.Resource;
 public class MembersResponse extends Members {
 
     /**
-     * 图片资源
+     * 打卡状态  1: 已打卡, 2: 未打卡
      */
-    private Resource image;
+    private Integer checkInStatus;
 }

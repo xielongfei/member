@@ -1,11 +1,17 @@
 package com.wechat.controller;
 
+import com.alibaba.fastjson2.JSON;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.wechat.entity.CheckInRecords;
 import com.wechat.entity.Members;
 import com.wechat.entity.request.MembersRequest;
+import com.wechat.entity.request.MembersResponse;
 import com.wechat.jwt.JwtTokenUtils;
+import com.wechat.mapper.MembersMapper;
 import com.wechat.result.Response;
 import com.wechat.result.ResultCode;
+import com.wechat.service.ICheckInRecordsService;
 import com.wechat.service.IMembersService;
 import com.wechat.service.ISmsService;
 import com.wechat.sms.CacheUtil;
@@ -16,11 +22,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.*;
 
 /**
  * <p>
@@ -36,6 +40,12 @@ public class MembersController {
 
     @Autowired
     private IMembersService membersService;
+
+    @Autowired
+    private MembersMapper membersMapper;
+
+    @Autowired
+    private ICheckInRecordsService checkInRecordsService;
 
     @Autowired
     private ISmsService smsService;
@@ -76,22 +86,42 @@ public class MembersController {
     @ApiOperation(value = "查单个会员")
     @GetMapping(value = "/getOne")
     public Object getOne(Members members) {
+        //        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//        Members members = (Members)authentication.getPrincipal();
         Members memberDB = membersService.getById(members.getId());
-        return Response.success(memberDB);
+        MembersResponse membersResponse = JSON.to(MembersResponse.class, JSON.toJSON(memberDB));
+        LocalDate today = LocalDate.now();
+        LocalDateTime startDateTime = today.atStartOfDay();
+        LocalDateTime endDateTime = today.atTime(23, 59, 59);
+        LambdaQueryWrapper wrapper = Wrappers.<CheckInRecords>lambdaQuery()
+                .eq(CheckInRecords::getMemberId, members.getId())
+                .between(CheckInRecords::getCheckInDate, startDateTime, endDateTime);
+        long value = checkInRecordsService.count(wrapper);
+        if (value > 0) {
+            membersResponse.setCheckInStatus(1);
+        } else {
+            membersResponse.setCheckInStatus(2);
+        }
+        return Response.success(membersResponse);
     }
 
     @ApiOperation(value = "查会员列表")
     @GetMapping(value = "/list")
-    public Object list() {
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//        Members members = (Members)authentication.getPrincipal();
-        List<Members> list = membersService.list();
+    public Object list(MembersRequest membersRequest) {
+        List<MembersResponse> list;
+        if (Objects.equals(membersRequest.getCheckInTab(), 1)) {
+            list = membersMapper.getCheckedInMembers();
+        } else if(Objects.equals(membersRequest.getCheckInTab(), 2)) {
+            list = membersMapper.getNotCheckedInMembers();
+        } else {
+            list = membersMapper.getAllMembersWithCheckInStatus();
+        }
         return Response.success(list);
     }
 
     @ApiOperation(value = "新增会员")
     @PostMapping(value = "/add")
-    public Object add(@RequestBody Members members) throws IOException {
+    public Object add(@RequestBody Members members){
         boolean bool = membersService.add(members);
         if (bool) {
             return Response.success();

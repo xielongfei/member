@@ -25,4 +25,9 @@ public class MembersRequest extends Members {
      * 验证码
      */
     private String verificationCode;
+
+    /**
+     * 打卡Tab  0: 全部, 1: 已打卡, 2: 未打卡
+     */
+    private Integer checkInTab;
 }
