@@ -1,8 +1,7 @@
-package com.wechat.entity.request;
+package com.wechat.entity.response;
 
 import com.wechat.entity.Members;
 import lombok.Data;
-import org.springframework.core.io.Resource;
 
 /**
  * @author: xielongfei

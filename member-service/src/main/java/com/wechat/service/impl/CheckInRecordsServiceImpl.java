@@ -50,6 +50,6 @@ public class CheckInRecordsServiceImpl extends ServiceImpl<CheckInRecordsMapper,
 
         consecutiveMissedCheckIns = consecutiveCheckIns > 0 ? 0 : Math.abs(consecutiveCheckIns) - 1;
 
-        return new CheckInStat(consecutiveCheckIns, consecutiveMissedCheckIns, totalCheckIns);
+        return new CheckInStat(consecutiveCheckIns, consecutiveMissedCheckIns, totalCheckIns, null, null);
     }
 }

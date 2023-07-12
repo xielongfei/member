@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.wechat.entity.CheckInRecords;
 import com.wechat.entity.Members;
 import com.wechat.entity.request.MembersRequest;
-import com.wechat.entity.request.MembersResponse;
+import com.wechat.entity.response.MembersResponse;
 import com.wechat.jwt.JwtTokenUtils;
 import com.wechat.mapper.MembersMapper;
 import com.wechat.result.Response;
@@ -18,8 +18,6 @@ import com.wechat.sms.CacheUtil;
 import com.wechat.util.MenuUtil;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -89,20 +87,7 @@ public class MembersController {
         //        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 //        Members members = (Members)authentication.getPrincipal();
         Members memberDB = membersService.getById(members.getId());
-        MembersResponse membersResponse = JSON.to(MembersResponse.class, JSON.toJSON(memberDB));
-        LocalDate today = LocalDate.now();
-        LocalDateTime startDateTime = today.atStartOfDay();
-        LocalDateTime endDateTime = today.atTime(23, 59, 59);
-        LambdaQueryWrapper wrapper = Wrappers.<CheckInRecords>lambdaQuery()
-                .eq(CheckInRecords::getMemberId, members.getId())
-                .between(CheckInRecords::getCheckInDate, startDateTime, endDateTime);
-        long value = checkInRecordsService.count(wrapper);
-        if (value > 0) {
-            membersResponse.setCheckInStatus(1);
-        } else {
-            membersResponse.setCheckInStatus(2);
-        }
-        return Response.success(membersResponse);
+        return Response.success(memberDB);
     }
 
     @ApiOperation(value = "查会员列表")

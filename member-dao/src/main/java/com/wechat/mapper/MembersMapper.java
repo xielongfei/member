@@ -2,7 +2,7 @@ package com.wechat.mapper;
 
 import com.wechat.entity.Members;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.wechat.entity.request.MembersResponse;
+import com.wechat.entity.response.MembersResponse;
 
 import java.util.List;
 

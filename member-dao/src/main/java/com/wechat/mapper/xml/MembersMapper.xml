@@ -31,7 +31,7 @@
         id, name, join_date, shop_id, referral_id, member_type_id, member_type_name, id_card, phone, province, city, county, address, full_address, latitude, longitude, delete_status, file_path, create_date, update_date
     </sql>
 
-    <select id="getAllMembersWithCheckInStatus" resultType="com.wechat.entity.request.MembersResponse">
+    <select id="getAllMembersWithCheckInStatus" resultType="com.wechat.entity.response.MembersResponse">
         SELECT
             m.id,
             m. NAME,
@@ -54,7 +54,7 @@
                 AND DATE(c.check_in_date) = CURDATE()
     </select>
 
-    <select id="getCheckedInMembers" resultType="com.wechat.entity.request.MembersResponse">
+    <select id="getCheckedInMembers" resultType="com.wechat.entity.response.MembersResponse">
         SELECT
             m.id,
             m. NAME,
@@ -71,7 +71,7 @@
                 INNER JOIN check_in_records c ON m.id = c.member_id
     </select>
 
-    <select id="getNotCheckedInMembers" resultType="com.wechat.entity.request.MembersResponse">
+    <select id="getNotCheckedInMembers" resultType="com.wechat.entity.response.MembersResponse">
         SELECT
             m.id,
             m. NAME,

@@ -3,6 +3,7 @@ package com.wechat.controller;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.wechat.entity.CheckInRecords;
+import com.wechat.entity.request.CheckInRequest;
 import com.wechat.entity.response.CheckInStat;
 import com.wechat.result.Response;
 import com.wechat.service.ICheckInRecordsService;
@@ -10,6 +11,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -39,8 +41,10 @@ public class CheckInRecordsController {
 
     @ApiOperation(value = "打卡记录")
     @GetMapping(value = "/list")
-    public Object list(CheckInRecords checkInRecords) {
-        LambdaQueryWrapper wrapper = Wrappers.<CheckInRecords>lambdaQuery().eq(CheckInRecords::getMemberId, checkInRecords.getMemberId());
+    public Object list(CheckInRequest checkInRequest) {
+        LambdaQueryWrapper wrapper = Wrappers.<CheckInRecords>lambdaQuery()
+                .eq(CheckInRecords::getMemberId, checkInRequest.getMemberId())
+                .apply("DATE_FORMAT(check_in_date, '%Y-%m') = {0}", checkInRequest.getCheckInMonth());
         List<CheckInRecords> list = checkInRecordsService.list(wrapper);
         return Response.success(list);
     }
@@ -49,6 +53,19 @@ public class CheckInRecordsController {
     @GetMapping(value = "/countMemberCheckIn")
     public Object countMemberCheckIn(CheckInRecords checkInRecords) {
         CheckInStat checkInStat = checkInRecordsService.getCheckInStat(checkInRecords.getMemberId());
+        LocalDate today = LocalDate.now();
+        LocalDateTime startDateTime = today.atStartOfDay();
+        LocalDateTime endDateTime = today.atTime(23, 59, 59);
+        LambdaQueryWrapper wrapper = Wrappers.<CheckInRecords>lambdaQuery()
+                .eq(CheckInRecords::getMemberId, checkInRecords.getMemberId())
+                .between(CheckInRecords::getCheckInDate, startDateTime, endDateTime);
+        CheckInRecords inRecords = checkInRecordsService.getOne(wrapper);
+        if (inRecords != null) {
+            checkInStat.setCheckInStatus(1);
+            checkInStat.setCheckInDate(inRecords.getCheckInDate());
+        } else {
+            checkInStat.setCheckInStatus(2);
+        }
         return Response.success(checkInStat);
     }
 }
