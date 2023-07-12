@@ -28,7 +28,7 @@ public class FileController {
 
     @ApiOperation(value = "上传图片")
     @PostMapping("/upload")
-    public Object uploadImage(@RequestParam("image") MultipartFile file) throws IOException {
+    public Object uploadImage(@RequestParam("file") MultipartFile file) throws IOException {
         // 检查文件是否为空
         if (file.isEmpty()) {
             // 处理文件为空的情况
