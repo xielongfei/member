@@ -3,10 +3,10 @@ package com.wechat.controller;
 import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.wechat.entity.CheckInRecords;
 import com.wechat.entity.Members;
 import com.wechat.entity.request.MembersRequest;
 import com.wechat.entity.response.MembersResponse;
+import com.wechat.enums.MembershipType;
 import com.wechat.jwt.JwtTokenUtils;
 import com.wechat.mapper.MembersMapper;
 import com.wechat.result.Response;
@@ -135,5 +135,13 @@ public class MembersController {
     public Object getDistance(MembersRequest membersRequest) {
         String distance = membersService.getDistance(membersRequest);
         return Response.success(distance);
+    }
+
+    @ApiOperation(value = "查超级会员列表")
+    @GetMapping(value = "/listSuperMember")
+    public Object listSuperMember() {
+        List<Members> list = membersService.list(Wrappers.<Members>lambdaQuery()
+                .eq(Members::getMemberTypeId, MembershipType.SUPER_ADMIN.getCode()));
+        return Response.success(list);
     }
 }

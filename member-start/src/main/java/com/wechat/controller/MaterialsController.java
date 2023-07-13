@@ -54,4 +54,11 @@ public class MaterialsController {
         return Response.success();
     }
 
+    @ApiOperation(value = "删除物料")
+    @PostMapping(value = "/remove")
+    public Object remove(@RequestBody Materials materials) {
+        materialsService.removeById(materials);
+        return Response.success();
+    }
+
 }

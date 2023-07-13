@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.wechat.entity.Members;
 import com.wechat.entity.request.MembersRequest;
+import com.wechat.enums.MembershipType;
 import com.wechat.mapper.MembersMapper;
 import com.wechat.service.IMembersService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -29,6 +30,7 @@ public class MembersServiceImpl extends ServiceImpl<MembersMapper, Members> impl
         if (membersDB != null) {
             return false;
         }
+        members.setMemberTypeName(MembershipType.getNameByCode(members.getMemberTypeId()));
         members.setDeleteStatus(0);
         return super.save(members);
     }

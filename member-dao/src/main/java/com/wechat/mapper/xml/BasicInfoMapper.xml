@@ -6,8 +6,7 @@
     <resultMap id="BaseResultMap" type="com.wechat.entity.BasicInfo">
         <id column="id" property="id" />
         <result column="customer_phone" property="customerPhone" />
-        <result column="material_contact_name" property="materialContactName" />
-        <result column="material_contact_phone" property="materialContactPhone" />
+        <result column="material_contact" property="materialContact" />
         <result column="material_contact_qr_code" property="materialContactQrCode" />
         <result column="create_date" property="createDate" />
         <result column="update_date" property="updateDate" />
@@ -15,7 +14,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, customer_phone, material_contact_name, material_contact_phone, material_contact_qr_code, create_date, update_date
+        id, customer_phone, material_contact, material_contact_qr_code, create_date, update_date
     </sql>
 
 </mapper>

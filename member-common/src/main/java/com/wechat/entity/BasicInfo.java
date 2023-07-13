@@ -37,16 +37,10 @@ public class BasicInfo implements Serializable {
     private String customerPhone;
 
     /**
-     * 物料联系人姓名
+     * 物料联系人
      */
-    @TableField("material_contact_name")
-    private String materialContactName;
-
-    /**
-     * 物料联系人手机号
-     */
-    @TableField("material_contact_phone")
-    private String materialContactPhone;
+    @TableField("material_contact")
+    private String materialContact;
 
     /**
      * 物料联系人二维码
