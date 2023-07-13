@@ -48,7 +48,6 @@ public class JwtTokenUtils implements InitializingBean {
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 
-
     public String createToken(Object claims) {
         return jwtSecurityProperties.getTokenStartWith() + Jwts.builder()
                 .serializeToJsonWith(new JacksonSerializer<>(JacksonProvider.DEFAULT_OBJECT_MAPPER))

@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.time.LocalDate;
 
 /**
- * @author: xielongfei
  * @date: 2023/07/11
  * @description:
  */
@@ -26,6 +25,12 @@ import java.time.LocalDate;
 @RequestMapping("/file")
 public class FileController {
 
+    /**
+     * 小程序api上传图片，name要保值一致，比如现在name=file，那前后端都要命名成file
+     * @param file
+     * @return
+     * @throws IOException
+     */
     @ApiOperation(value = "上传图片")
     @PostMapping("/upload")
     public Object uploadImage(@RequestParam("file") MultipartFile file) throws IOException {

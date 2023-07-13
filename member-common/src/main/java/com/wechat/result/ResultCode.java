@@ -12,8 +12,9 @@ public enum ResultCode {
     //FAIL(400, "失败"),//失败
     BAD_REQUEST(400, "Bad Request"),
     UNAUTHORIZED(401, "认证失败"),//未认证
+    SC_FORBIDDEN(403, "禁止访问"),
     NOT_FOUND(404, "不存在"),//不存在
-    INTERNAL_SERVER_ERROR(500, "系统繁忙"),//服务器内部错误
+    INTERNAL_SERVER_ERROR(500, "服务器内部错误"),//服务器内部错误
     METHOD_NOT_ALLOWED(405,"方法不被允许"),
 
     /*参数错误:1001-1999*/

@@ -1,5 +1,8 @@
 package com.wechat.jwt;
 
+import com.alibaba.fastjson2.JSON;
+import com.wechat.result.Response;
+import com.wechat.result.ResultCode;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.access.AccessDeniedException;
@@ -7,9 +10,9 @@ import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 
 /**
- * @author: xielongfei
  * @date: 2023/07/07
  * @description:
  */
@@ -18,6 +21,15 @@ public class JwtAccessDeniedHandler implements AccessDeniedHandler {
 
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException {
-        response.sendError(HttpServletResponse.SC_FORBIDDEN, accessDeniedException.getMessage());
+        // 设置响应的Content-Type为application/json
+        response.setContentType("application/json");
+        // 设置响应的字符编码为UTF-8
+        response.setCharacterEncoding("UTF-8");
+
+        // 将JSON字符串写入响应
+        PrintWriter writer = response.getWriter();
+        // 创建错误响应对象
+        writer.write(JSON.toJSONString(Response.failure(ResultCode.SC_FORBIDDEN)));
+        writer.flush();
     }
 }
