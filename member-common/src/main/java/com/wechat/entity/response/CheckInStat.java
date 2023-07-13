@@ -1,6 +1,7 @@
 package com.wechat.entity.response;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -12,6 +13,7 @@ import java.time.LocalDateTime;
  */
 @Data
 @AllArgsConstructor
+@Builder
 public class CheckInStat {
 
     /**
@@ -38,4 +40,5 @@ public class CheckInStat {
      * 打卡状态  1: 已打卡, 2: 未打卡
      */
     private Integer checkInStatus;
+
 }

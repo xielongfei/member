@@ -30,4 +30,9 @@ public class MembersRequest extends Members {
      * 打卡Tab  0: 全部, 1: 已打卡, 2: 未打卡
      */
     private Integer checkInTab;
+
+    /**
+     * 姓名或商铺编号模糊搜索
+     */
+    private String search;
 }

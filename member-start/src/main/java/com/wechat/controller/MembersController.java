@@ -20,8 +20,6 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -101,6 +99,16 @@ public class MembersController {
         } else {
             list = membersMapper.getAllMembersWithCheckInStatus();
         }
+        return Response.success(list);
+    }
+
+    @ApiOperation(value = "姓名或编号模糊搜索会员")
+    @GetMapping(value = "/searchMemberByNameOrShopId")
+    public Object searchMemberByNameOrShopId(MembersRequest membersRequest) {
+        LambdaQueryWrapper wrapper = Wrappers.<Members>lambdaQuery()
+                .like(Members::getName, membersRequest.getSearch())
+                .or().like(Members::getShopId, membersRequest.getSearch());
+        List<Members> list = membersService.list(wrapper);
         return Response.success(list);
     }
 

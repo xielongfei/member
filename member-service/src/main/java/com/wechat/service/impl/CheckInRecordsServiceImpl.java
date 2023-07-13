@@ -10,6 +10,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 /**
@@ -33,23 +34,25 @@ public class CheckInRecordsServiceImpl extends ServiceImpl<CheckInRecordsMapper,
         LocalDate currentDate = LocalDate.now();
         int consecutiveCheckIns = 0;
         int consecutiveMissedCheckIns = 0;
-        int totalCheckIns = 0;
+        int totalCheckIns = checkInRecords.size();
 
         for (CheckInRecords record : checkInRecords) {
             LocalDate checkInDate = record.getCheckInDate().toLocalDate();
 
             if (checkInDate.equals(currentDate)) {
                 consecutiveCheckIns++;
+            } else if (consecutiveCheckIns == 0) {
+                long daysBetween = ChronoUnit.DAYS.between(checkInDate, currentDate);
+                consecutiveMissedCheckIns = (int) daysBetween;
+                break;
             } else {
                 break;
             }
+              currentDate = currentDate.minusDays(1);
 
-            currentDate = currentDate.minusDays(1);
-            totalCheckIns++;
         }
-
-        consecutiveMissedCheckIns = consecutiveCheckIns > 0 ? 0 : Math.abs(consecutiveCheckIns) - 1;
-
-        return new CheckInStat(consecutiveCheckIns, consecutiveMissedCheckIns, totalCheckIns, null, null);
+        return CheckInStat.builder().consecutiveCheckIns(consecutiveCheckIns)
+                .consecutiveMissedCheckIns(consecutiveMissedCheckIns)
+                .totalCheckIns(totalCheckIns).build();
     }
 }
