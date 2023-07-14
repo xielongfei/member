@@ -10,10 +10,10 @@ import com.wechat.jwt.JwtTokenUtils;
 import com.wechat.mapper.MembersMapper;
 import com.wechat.result.Response;
 import com.wechat.result.ResultCode;
-import com.wechat.service.ICheckInRecordsService;
 import com.wechat.service.IMembersService;
 import com.wechat.service.ISmsService;
 import com.wechat.sms.CacheUtil;
+import com.wechat.util.ConstantsUtil;
 import com.wechat.util.MenuUtil;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +56,7 @@ public class MembersController {
 //            return Response.failure(ResultCode.UNAUTHORIZED);
 //        }
         Members members = membersService.getOne(Wrappers.<Members>lambdaQuery().eq(Members::getPhone, membersRequest.getPhone()));
+        members.setFilePath(ConstantsUtil.serviceUrl + members.getFilePath());
         Map<String, Object> claims = new HashMap<>();
         claims.put("member", members);
         String token = jwtTokenUtils.createToken(members);
