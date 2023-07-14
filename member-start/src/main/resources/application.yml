@@ -13,8 +13,10 @@ spring:
   servlet:
     multipart:
       enabled: true
-
   port: 8080
+
+service:
+  url: http://127.0.0.1:8080/file
 
 #jwt
 jwt:
@@ -24,7 +26,7 @@ jwt:
   # 使用Base64对该令牌进行编码
   base64-secret: MTIzNDU2Nzg5MHF3ZXJ0eXVpb3Bhc2RmZ2hqa2x6eGN2Ym5t
   # 令牌过期时间 此处单位/毫秒
-  token-validity-in-seconds: 14400000
+  token-validity-in-seconds: 259200000
 
 
 tencent:

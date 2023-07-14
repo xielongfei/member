@@ -61,8 +61,8 @@ public class MaterialsController {
 
     @ApiOperation(value = "删除物料")
     @PostMapping(value = "/remove")
-    public Object remove(@RequestBody Materials materials) {
-        materialsService.removeById(materials);
+    public Object remove(@RequestBody List<Integer> materialIds) {
+        materialsService.removeBatchByIds(materialIds);
         return Response.success();
     }
 
