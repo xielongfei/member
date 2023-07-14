@@ -43,9 +43,12 @@ public class Response {
             Members member = (Members) data;
             member.setFilePath(addExtraInfo(member.getFilePath()));
         } else if (data instanceof List<?>) {
-            List<Members> members = (List<Members>) data;
-            for (Members member : members) {
-                member.setFilePath(addExtraInfo(member.getFilePath()));
+            List<?> list = (List<?>) data;
+            for (Object obj : list) {
+                if (obj instanceof Members) {
+                    Members member = (Members) obj;
+                    member.setFilePath(addExtraInfo(member.getFilePath()));
+                }
             }
         }
     }
