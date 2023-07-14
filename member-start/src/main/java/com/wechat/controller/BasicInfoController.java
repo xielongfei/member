@@ -7,7 +7,10 @@ import com.wechat.result.Response;
 import com.wechat.service.IBasicInfoService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * <p>
@@ -26,8 +29,12 @@ public class BasicInfoController {
 
     @ApiOperation(value = "查基础信息")
     @GetMapping(value = "/getOne")
-    public Object getOne(BasicInfo basicInfoRequest) {
-        BasicInfo basicInfo = basicInfoService.getById(basicInfoRequest.getId());
+    public Object getOne() {
+        List<BasicInfo> list = basicInfoService.list();
+        BasicInfo basicInfo = null;
+        if (!CollectionUtils.isEmpty(list)) {
+            basicInfo = list.get(0);
+        }
         return Response.success(basicInfo);
     }
 
