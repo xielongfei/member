@@ -3,6 +3,7 @@ package com.wechat.controller;
 import com.wechat.entity.Materials;
 import com.wechat.result.Response;
 import com.wechat.service.IMaterialsService;
+import com.wechat.util.ConstantsUtil;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -28,6 +29,7 @@ public class MaterialsController {
     @GetMapping(value = "/getOne")
     public Object getOne(Materials materialsRequest) {
         Materials materials = materialsService.getById(materialsRequest.getId());
+        materials.setImageUrl(ConstantsUtil.serviceUrl + materials.getImageUrl());
         return Response.success(materials);
     }
 
@@ -35,6 +37,9 @@ public class MaterialsController {
     @GetMapping(value = "/list")
     public Object list() {
         List<Materials> list = materialsService.list();
+        list.stream().forEach(s -> {
+            s.setImageUrl(ConstantsUtil.serviceUrl + s.getImageUrl());
+        });
         return Response.success(list);
     }
 

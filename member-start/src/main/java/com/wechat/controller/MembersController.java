@@ -1,6 +1,5 @@
 package com.wechat.controller;
 
-import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.wechat.entity.Members;
@@ -39,9 +38,6 @@ public class MembersController {
 
     @Autowired
     private MembersMapper membersMapper;
-
-    @Autowired
-    private ICheckInRecordsService checkInRecordsService;
 
     @Autowired
     private ISmsService smsService;

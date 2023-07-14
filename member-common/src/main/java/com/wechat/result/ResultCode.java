@@ -19,8 +19,10 @@ public enum ResultCode {
 
     /*参数错误:1001-1999*/
     PARAMS_IS_INVALID(1001, "参数无效"),
-    PARAMS_IS_BLANK(1002, "参数为空");
+    PARAMS_IS_BLANK(1002, "参数为空"),
+
     /*用户错误2001-2999*/
+    CHECKED_IN(2001, "已打卡");
 
     private Integer code;
     private String message;

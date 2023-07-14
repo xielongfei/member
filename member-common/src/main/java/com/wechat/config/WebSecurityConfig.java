@@ -63,6 +63,10 @@ public class WebSecurityConfig {
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeHttpRequests()
+
+                // 放行文件访问
+                .requestMatchers("/file/images/**").permitAll()
+
                 // 放行静态资源
                 .requestMatchers(HttpMethod.GET,
                         "/*.html",
@@ -77,9 +81,6 @@ public class WebSecurityConfig {
                 .requestMatchers("/swagger-resources/*").permitAll()
                 .requestMatchers("/webjars/*").permitAll()
                 .requestMatchers("/*/api-docs").permitAll()
-
-                // 放行文件访问
-                .requestMatchers("/file/*").permitAll()
 
                 // 放行druid
                 .requestMatchers("/druid/*").permitAll()

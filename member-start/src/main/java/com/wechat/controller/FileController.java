@@ -2,6 +2,7 @@ package com.wechat.controller;
 
 import com.wechat.result.Response;
 import com.wechat.result.ResultCode;
+import com.wechat.util.ConstantsUtil;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -44,7 +45,7 @@ public class FileController {
         String storagePath;
         String osName = System.getProperty("os.name");
         if (osName.startsWith("Windows")) {
-            storagePath = "D:/subfile/" + LocalDate.now();
+            storagePath = "D:/images/" + LocalDate.now();
         } else {
             storagePath = "/images/" + LocalDate.now();
         }
@@ -58,14 +59,14 @@ public class FileController {
         // 将文件保存到指定路径
         File dest = new File(filePath);
         FileCopyUtils.copy(file.getBytes(), dest);
-        return Response.success(filePath);
+        return Response.success(ConstantsUtil.serviceUrl + filePath);
     }
 
     @ApiOperation(value = "获取图片")
-    @GetMapping("/getImage")
-    public ResponseEntity getImage(String imagePath) {
+    @GetMapping("/images/{date}/{filename:.+}")
+    public ResponseEntity images(@PathVariable String date, @PathVariable String filename) {
         // 创建文件资源
-        Resource resource = new FileSystemResource(imagePath);
+        Resource resource = new FileSystemResource("/images/" + "/" + date + "/" + filename);
         // 检查文件是否存在
         if (!resource.exists()) {
             // 处理文件不存在的情况，返回404错误

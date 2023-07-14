@@ -6,6 +6,7 @@ import com.wechat.entity.CheckInRecords;
 import com.wechat.entity.request.CheckInRequest;
 import com.wechat.entity.response.CheckInStat;
 import com.wechat.result.Response;
+import com.wechat.result.ResultCode;
 import com.wechat.service.ICheckInRecordsService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,18 @@ public class CheckInRecordsController {
     @ApiOperation(value = "打卡")
     @PostMapping(value = "/checkIn")
     public Object checkIn(@RequestBody CheckInRecords checkInRecords) {
+        //查询今天是否已打卡
+        LocalDate today = LocalDate.now();
+        LocalDateTime startDateTime = today.atStartOfDay();
+        LocalDateTime endDateTime = today.atTime(23, 59, 59);
+        LambdaQueryWrapper wrapper = Wrappers.<CheckInRecords>lambdaQuery()
+                .eq(CheckInRecords::getMemberId, checkInRecords.getMemberId())
+                .between(CheckInRecords::getCheckInDate, startDateTime, endDateTime);
+        CheckInRecords inRecords = checkInRecordsService.getOne(wrapper);
+        if (inRecords != null) {
+            return Response.failure(ResultCode.CHECKED_IN);
+        }
+
         checkInRecords.setCheckInDate(LocalDateTime.now());
         //计算连续打卡次数
         checkInRecordsService.save(checkInRecords);
