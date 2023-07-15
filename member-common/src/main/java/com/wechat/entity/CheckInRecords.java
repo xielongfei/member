@@ -49,12 +49,6 @@ public class CheckInRecords implements Serializable {
     private Integer consecutiveCheckIns;
 
     /**
-     * 警告状态：0-非警告状态，1-警告状态
-     */
-    @TableField("warning_status")
-    private Integer warningStatus;
-
-    /**
      * 省
      */
     @TableField("province")

@@ -3,11 +3,13 @@ package com.wechat.controller;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.wechat.entity.CheckInRecords;
+import com.wechat.entity.Members;
 import com.wechat.entity.request.CheckInRequest;
 import com.wechat.entity.response.CheckInStat;
 import com.wechat.result.Response;
 import com.wechat.result.ResultCode;
 import com.wechat.service.ICheckInRecordsService;
+import com.wechat.service.IMembersService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -31,6 +33,9 @@ public class CheckInRecordsController {
     @Autowired
     private ICheckInRecordsService checkInRecordsService;
 
+    @Autowired
+    private IMembersService membersService;
+
     @ApiOperation(value = "打卡")
     @PostMapping(value = "/checkIn")
     public Object checkIn(@RequestBody CheckInRecords checkInRecords) {
@@ -50,6 +55,12 @@ public class CheckInRecordsController {
         //计算连续打卡次数
         checkInRecordsService.save(checkInRecords);
         CheckInStat checkInStat = checkInRecordsService.countMemberCheckIn(checkInRecords);
+
+        //更新会员表警告时间
+        Members member = new Members();
+        member.setId(checkInRecords.getMemberId());
+        member.setWarnDate(LocalDate.now());
+        membersService.updateById(member);
         return Response.success(checkInStat);
     }
 

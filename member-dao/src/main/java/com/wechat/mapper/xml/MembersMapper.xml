@@ -23,11 +23,15 @@
         <result column="file_path" property="filePath" />
         <result column="create_date" property="createDate" />
         <result column="update_date" property="updateDate" />
+        <result column="warn_date" property="warnDate" />
+        <result column="warn_status" property="warnStatus" />
+        <result column="warn_count" property="warnCount" />
+
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, name, join_date, shop_id, referral_id, member_type_id, member_type_name, id_card, phone, province, city, county, address, full_address, latitude, longitude, file_path, create_date, update_date
+        id, name, join_date, shop_id, referral_id, member_type_id, member_type_name, id_card, phone, province, city, county, address, full_address, latitude, longitude, file_path, create_date, update_date, warn_date, warn_status, warn_count
     </sql>
 
     <select id="getAllMembersWithCheckInStatus" resultType="com.wechat.entity.response.MembersResponse">
@@ -51,10 +55,16 @@
             members m
                 LEFT JOIN check_in_records c ON m.id = c.member_id
                 AND DATE(c.check_in_date) = CURDATE()
+        <where>
+            <if test="search != null and search != ''">
+                name like concat('%',#{search},'%') or shop_id like concat('%',#{search},'%')
+            </if>
+        </where>
     </select>
 
     <select id="getCheckedInMembers" resultType="com.wechat.entity.response.MembersResponse">
         SELECT
+            DISTINCT
             m.id,
             m. NAME,
             m.shop_id,
@@ -68,6 +78,11 @@
         FROM
             members m
                 INNER JOIN check_in_records c ON m.id = c.member_id
+        <where>
+            <if test="search != null and search != ''">
+                name like concat('%',#{search},'%') or shop_id like concat('%',#{search},'%')
+            </if>
+        </where>
     </select>
 
     <select id="getNotCheckedInMembers" resultType="com.wechat.entity.response.MembersResponse">
@@ -87,6 +102,9 @@
                 LEFT JOIN check_in_records c ON m.id = c.member_id
         WHERE
             c.member_id IS NULL
+            <if test="search != null and search != ''">
+                and name like concat('%',#{search},'%') or shop_id like concat('%',#{search},'%')
+            </if>
     </select>
 
 </mapper>

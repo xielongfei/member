@@ -129,6 +129,24 @@ public class Members implements Serializable {
     @TableField("file_path")
     private String filePath;
 
+    /**
+     * 警告状态：0-非警告状态，1-警告状态
+     */
+    @TableField("warn_status")
+    private Integer warnStatus;
+
+    /**
+     * 警告次数
+     */
+    @TableField("warn_count")
+    private Integer warnCount;
+
+    /**
+     * 警告时间
+     */
+    @TableField("warn_date")
+    private LocalDate warnDate;
+
     @TableField("create_date")
     private LocalDateTime createDate;
 

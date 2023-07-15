@@ -10,6 +10,8 @@ import com.wechat.service.IMembersService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+
 /**
  * <p>
  * 会员表 服务实现类
@@ -31,6 +33,7 @@ public class MembersServiceImpl extends ServiceImpl<MembersMapper, Members> impl
             return false;
         }
         members.setMemberTypeName(MembershipType.getNameByCode(members.getMemberTypeId()));
+        members.setWarnDate(LocalDate.now());
         return super.save(members);
     }
 

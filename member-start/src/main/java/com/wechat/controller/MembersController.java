@@ -1,6 +1,7 @@
 package com.wechat.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.wechat.entity.Members;
 import com.wechat.entity.request.MembersRequest;
@@ -19,6 +20,8 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 /**
@@ -56,7 +59,13 @@ public class MembersController {
 //            return Response.failure(ResultCode.UNAUTHORIZED);
 //        }
         Members members = membersService.getOne(Wrappers.<Members>lambdaQuery().eq(Members::getPhone, membersRequest.getPhone()));
-        //members.setFilePath(ConstantsUtil.serviceUrl + members.getFilePath());
+        if (Objects.equals(1, members.getMemberTypeId()) || Objects.equals(2, members.getMemberTypeId())) {
+            //31天未打卡禁止登录
+            long daysDiff = ChronoUnit.DAYS.between(members.getWarnDate(), LocalDate.now());
+            if (daysDiff >= 31) {
+                return Response.failure(ResultCode.SC_FORBIDDEN);
+            }
+        }
         Map<String, Object> claims = new HashMap<>();
         claims.put("member", members);
         String token = jwtTokenUtils.createToken(members);
@@ -90,11 +99,11 @@ public class MembersController {
     public Object list(MembersRequest membersRequest) {
         List<MembersResponse> list;
         if (Objects.equals(membersRequest.getCheckInTab(), 1)) {
-            list = membersMapper.getCheckedInMembers();
+            list = membersMapper.getCheckedInMembers(membersRequest.getSearch());
         } else if (Objects.equals(membersRequest.getCheckInTab(), 2)) {
-            list = membersMapper.getNotCheckedInMembers();
+            list = membersMapper.getNotCheckedInMembers(membersRequest.getSearch());
         } else {
-            list = membersMapper.getAllMembersWithCheckInStatus();
+            list = membersMapper.getAllMembersWithCheckInStatus(membersRequest.getSearch());
         }
         return Response.success(list);
     }
@@ -185,8 +194,18 @@ public class MembersController {
                 nearbyLocations.add(location);
             }
         }
-
         return Response.success(nearbyLocations);
+    }
+
+    @ApiOperation(value = "解除告警")
+    @PostMapping(value = "/disableWarning")
+    public Object disableWarning(@RequestBody Members members) {
+        LambdaUpdateWrapper wrapper = Wrappers.<Members>lambdaUpdate()
+                .set(Members::getWarnStatus, 0)
+                .set(Members::getWarnDate, LocalDate.now())
+                .eq(Members::getShopId, members.getShopId());
+        membersService.update(wrapper);
+        return Response.success();
     }
 
 }

@@ -8,7 +8,6 @@
         <result column="member_id" property="memberId" />
         <result column="check_in_date" property="checkInDate" />
         <result column="consecutive_check_ins" property="consecutiveCheckIns" />
-        <result column="warning_status" property="warningStatus" />
         <result column="province" property="province" />
         <result column="city" property="city" />
         <result column="county" property="county" />
@@ -20,7 +19,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, member_id, check_in_date, consecutive_check_ins, warning_status, create_date, update_date
+        id, member_id, check_in_date, consecutive_check_ins, create_date, update_date
     </sql>
 
 </mapper>
