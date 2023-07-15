@@ -23,7 +23,8 @@ public enum ResultCode {
     NULL_POINT(1003, "空指针"),
 
     /*用户错误2001-2999*/
-    CHECKED_IN(2001, "已打卡");
+    CHECKED_IN(2001, "已打卡"),
+    DUPLICATE_ENTRY(2002, "重复添加");
 
     private Integer code;
     private String message;

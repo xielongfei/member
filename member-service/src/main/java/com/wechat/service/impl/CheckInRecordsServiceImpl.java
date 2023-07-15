@@ -10,6 +10,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 
@@ -23,6 +24,25 @@ import java.util.List;
  */
 @Service
 public class CheckInRecordsServiceImpl extends ServiceImpl<CheckInRecordsMapper, CheckInRecords> implements ICheckInRecordsService {
+
+    @Override
+    public CheckInStat countMemberCheckIn(CheckInRecords checkInRecords) {
+        CheckInStat checkInStat = this.getCheckInStat(checkInRecords.getMemberId());
+        LocalDate today = LocalDate.now();
+        LocalDateTime startDateTime = today.atStartOfDay();
+        LocalDateTime endDateTime = today.atTime(23, 59, 59);
+        LambdaQueryWrapper wrapper = Wrappers.<CheckInRecords>lambdaQuery()
+                .eq(CheckInRecords::getMemberId, checkInRecords.getMemberId())
+                .between(CheckInRecords::getCheckInDate, startDateTime, endDateTime);
+        CheckInRecords inRecords = super.getOne(wrapper);
+        if (inRecords != null) {
+            checkInStat.setCheckInStatus(1);
+            checkInStat.setCheckInDate(inRecords.getCheckInDate());
+        } else {
+            checkInStat.setCheckInStatus(2);
+        }
+        return checkInStat;
+    }
 
     @Override
     public CheckInStat getCheckInStat(Integer memberId) {

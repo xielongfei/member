@@ -112,6 +112,16 @@ public class MembersController {
     @ApiOperation(value = "新增会员")
     @PostMapping(value = "/add")
     public Object add(@RequestBody Members members) {
+
+        List<Members> list = membersService.list();
+        double distance = 0.5; //500米内只能出现一家店铺
+        for (Members location : list) {
+            double locationDistance = GeoUtils.calculateDistance(members.getLatitude(), members.getLongitude(), location.getLatitude(), location.getLongitude());
+            if (locationDistance <= distance) {
+                return Response.failure(ResultCode.DUPLICATE_ENTRY);
+            }
+        }
+
         boolean bool = membersService.add(members);
         if (bool) {
             return Response.success();
@@ -123,6 +133,19 @@ public class MembersController {
     @ApiOperation(value = "更新会员")
     @PostMapping(value = "/update")
     public Object update(@RequestBody Members members) {
+
+        List<Members> list = membersService.list();
+        double distance = 0.5; //500米内只能出现一家店铺
+        for (Members location : list) {
+            if (Objects.equals(members.getId(), location.getId())) {
+                continue;
+            }
+            double locationDistance = GeoUtils.calculateDistance(members.getLatitude(), members.getLongitude(), location.getLatitude(), location.getLongitude());
+            if (locationDistance <= distance) {
+                return Response.failure(ResultCode.DUPLICATE_ENTRY);
+            }
+        }
+
         membersService.updateById(members);
         return Response.success();
     }

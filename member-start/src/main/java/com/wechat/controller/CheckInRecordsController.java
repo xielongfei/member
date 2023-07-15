@@ -49,7 +49,8 @@ public class CheckInRecordsController {
         checkInRecords.setCheckInDate(LocalDateTime.now());
         //计算连续打卡次数
         checkInRecordsService.save(checkInRecords);
-        return Response.success();
+        CheckInStat checkInStat = checkInRecordsService.countMemberCheckIn(checkInRecords);
+        return Response.success(checkInStat);
     }
 
     @ApiOperation(value = "打卡记录")
@@ -65,20 +66,7 @@ public class CheckInRecordsController {
     @ApiOperation(value = "统计会员打卡次数")
     @GetMapping(value = "/countMemberCheckIn")
     public Object countMemberCheckIn(CheckInRecords checkInRecords) {
-        CheckInStat checkInStat = checkInRecordsService.getCheckInStat(checkInRecords.getMemberId());
-        LocalDate today = LocalDate.now();
-        LocalDateTime startDateTime = today.atStartOfDay();
-        LocalDateTime endDateTime = today.atTime(23, 59, 59);
-        LambdaQueryWrapper wrapper = Wrappers.<CheckInRecords>lambdaQuery()
-                .eq(CheckInRecords::getMemberId, checkInRecords.getMemberId())
-                .between(CheckInRecords::getCheckInDate, startDateTime, endDateTime);
-        CheckInRecords inRecords = checkInRecordsService.getOne(wrapper);
-        if (inRecords != null) {
-            checkInStat.setCheckInStatus(1);
-            checkInStat.setCheckInDate(inRecords.getCheckInDate());
-        } else {
-            checkInStat.setCheckInStatus(2);
-        }
+        CheckInStat checkInStat = checkInRecordsService.countMemberCheckIn(checkInRecords);
         return Response.success(checkInStat);
     }
 }

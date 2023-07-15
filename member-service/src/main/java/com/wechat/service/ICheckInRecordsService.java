@@ -15,4 +15,6 @@ import com.wechat.entity.response.CheckInStat;
 public interface ICheckInRecordsService extends IService<CheckInRecords> {
 
     CheckInStat getCheckInStat(Integer memberId);
+
+    CheckInStat countMemberCheckIn(CheckInRecords checkInRecords);
 }
