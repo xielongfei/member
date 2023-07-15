@@ -47,8 +47,8 @@ public class MembersServiceImpl extends ServiceImpl<MembersMapper, Members> impl
     public String getDistance(MembersRequest membersRequest) {
         Members membersA = super.getOne(Wrappers.<Members>lambdaQuery().eq(Members::getShopId, membersRequest.getShopIdA()));
         Members membersb = super.getOne(Wrappers.<Members>lambdaQuery().eq(Members::getShopId, membersRequest.getShopIdB()));
-        double distance = getDistanceBetween(membersA.getLatitude().doubleValue(), membersA.getLongitude().doubleValue(),
-                membersb.getLatitude().doubleValue(), membersb.getLongitude().doubleValue());
+        double distance = getDistanceBetween(membersA.getLatitude(), membersA.getLongitude(),
+                membersb.getLatitude(), membersb.getLongitude());
         // 将距离格式化为需要的单位或精度
         String formattedDistance = formatDistance(distance);
         return formattedDistance;

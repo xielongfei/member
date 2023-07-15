@@ -13,7 +13,7 @@ import com.wechat.result.ResultCode;
 import com.wechat.service.IMembersService;
 import com.wechat.service.ISmsService;
 import com.wechat.sms.CacheUtil;
-import com.wechat.util.ConstantsUtil;
+import com.wechat.util.GeoUtils;
 import com.wechat.util.MenuUtil;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +26,7 @@ import java.util.*;
  * 会员表 前端控制器
  * </p>
  *
- * @author 
+ * @author
  * @since 2023-07-06
  */
 @RestController
@@ -50,7 +50,7 @@ public class MembersController {
 
     @ApiOperation("登录授权")
     @PostMapping(value = "/login")
-    public Object login(@RequestBody MembersRequest membersRequest){
+    public Object login(@RequestBody MembersRequest membersRequest) {
         String code = CacheUtil.cache.getIfPresent(membersRequest.getPhone());
 //        if (!Objects.equals(code, membersRequest.getVerificationCode())) {
 //            return Response.failure(ResultCode.UNAUTHORIZED);
@@ -69,7 +69,7 @@ public class MembersController {
     @PostMapping("/sendCode")
     public Object sendCode(@RequestBody Members members) {
         boolean isSend = smsService.send(members.getPhone());
-        if (isSend){
+        if (isSend) {
             return Response.success();
         } else {
             return Response.failure(ResultCode.BAD_REQUEST);
@@ -91,7 +91,7 @@ public class MembersController {
         List<MembersResponse> list;
         if (Objects.equals(membersRequest.getCheckInTab(), 1)) {
             list = membersMapper.getCheckedInMembers();
-        } else if(Objects.equals(membersRequest.getCheckInTab(), 2)) {
+        } else if (Objects.equals(membersRequest.getCheckInTab(), 2)) {
             list = membersMapper.getNotCheckedInMembers();
         } else {
             list = membersMapper.getAllMembersWithCheckInStatus();
@@ -111,7 +111,7 @@ public class MembersController {
 
     @ApiOperation(value = "新增会员")
     @PostMapping(value = "/add")
-    public Object add(@RequestBody Members members){
+    public Object add(@RequestBody Members members) {
         boolean bool = membersService.add(members);
         if (bool) {
             return Response.success();
@@ -141,4 +141,22 @@ public class MembersController {
                 .eq(Members::getMemberTypeId, MembershipType.SUPER_ADMIN.getCode()));
         return Response.success(list);
     }
+
+    @ApiOperation(value = "经纬度查附近会员")
+    @GetMapping(value = "/findNearbyLocations")
+    public Object findNearbyLocations(Double latitude, Double longitude) {
+        List<Members> nearbyLocations = new ArrayList<>();
+
+        List<Members> list = membersService.list();
+        double distance = 2; //2km
+        for (Members location : list) {
+            double locationDistance = GeoUtils.calculateDistance(latitude, longitude, location.getLatitude(), location.getLongitude());
+            if (locationDistance <= distance) {
+                nearbyLocations.add(location);
+            }
+        }
+
+        return Response.success(nearbyLocations);
+    }
+
 }

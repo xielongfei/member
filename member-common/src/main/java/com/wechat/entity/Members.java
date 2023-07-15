@@ -115,13 +115,13 @@ public class Members implements Serializable {
      * 纬度
      */
     @TableField("latitude")
-    private BigDecimal latitude;
+    private double latitude;
 
     /**
      * 经度
      */
     @TableField("longitude")
-    private BigDecimal longitude;
+    private double longitude;
 
     /**
      * 删除状态：0-未删除，1-已删除
