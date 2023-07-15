@@ -8,13 +8,14 @@
         <result column="customer_phone" property="customerPhone" />
         <result column="material_contact" property="materialContact" />
         <result column="material_contact_qr_code" property="materialContactQrCode" />
+        <result column="map_key" property="mapKey"/>
         <result column="create_date" property="createDate" />
         <result column="update_date" property="updateDate" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, customer_phone, material_contact, material_contact_qr_code, create_date, update_date
+        id, customer_phone, material_contact, material_contact_qr_code, create_date, update_date, map_key
     </sql>
 
 </mapper>

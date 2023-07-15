@@ -59,7 +59,7 @@ public class FileController {
         // 将文件保存到指定路径
         File dest = new File(filePath);
         FileCopyUtils.copy(file.getBytes(), dest);
-        return Response.success(ConstantsUtil.serviceUrl + filePath);
+        return Response.success(filePath);
     }
 
     @ApiOperation(value = "获取图片")

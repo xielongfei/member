@@ -1,5 +1,7 @@
 package com.wechat.entity;
 
+import com.alibaba.fastjson2.JSONArray;
+import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -47,6 +49,13 @@ public class BasicInfo implements Serializable {
      */
     @TableField("material_contact_qr_code")
     private String materialContactQrCode;
+
+    /**
+     * 地图key
+     */
+    //@TableField(value = "map_key", typeHandler = com.wechat.handle.JSONArrayTypeHandler.class)
+    @TableField(value = "map_key")
+    private String mapKey;
 
     @TableField("create_date")
     private LocalDateTime createDate;

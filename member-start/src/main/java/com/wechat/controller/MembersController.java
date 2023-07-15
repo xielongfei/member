@@ -56,7 +56,7 @@ public class MembersController {
 //            return Response.failure(ResultCode.UNAUTHORIZED);
 //        }
         Members members = membersService.getOne(Wrappers.<Members>lambdaQuery().eq(Members::getPhone, membersRequest.getPhone()));
-        members.setFilePath(ConstantsUtil.serviceUrl + members.getFilePath());
+        //members.setFilePath(ConstantsUtil.serviceUrl + members.getFilePath());
         Map<String, Object> claims = new HashMap<>();
         claims.put("member", members);
         String token = jwtTokenUtils.createToken(members);

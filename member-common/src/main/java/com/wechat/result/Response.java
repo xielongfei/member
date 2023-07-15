@@ -20,7 +20,7 @@ public class Response {
 
     // 成功返回数据
     public static Result success(Object data) {
-        preHandle(data);
+        //preHandle(data);
         return new Result()
                 .setResult(ResultCode.SUCCESS, data);
     }
