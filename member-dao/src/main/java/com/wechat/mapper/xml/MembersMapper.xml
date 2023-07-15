@@ -20,7 +20,6 @@
         <result column="full_address" property="fullAddress" />
         <result column="latitude" property="latitude" />
         <result column="longitude" property="longitude" />
-        <result column="delete_status" property="deleteStatus" />
         <result column="file_path" property="filePath" />
         <result column="create_date" property="createDate" />
         <result column="update_date" property="updateDate" />
@@ -28,7 +27,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, name, join_date, shop_id, referral_id, member_type_id, member_type_name, id_card, phone, province, city, county, address, full_address, latitude, longitude, delete_status, file_path, create_date, update_date
+        id, name, join_date, shop_id, referral_id, member_type_id, member_type_name, id_card, phone, province, city, county, address, full_address, latitude, longitude, file_path, create_date, update_date
     </sql>
 
     <select id="getAllMembersWithCheckInStatus" resultType="com.wechat.entity.response.MembersResponse">

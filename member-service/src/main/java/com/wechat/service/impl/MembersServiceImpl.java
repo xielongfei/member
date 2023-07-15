@@ -31,14 +31,12 @@ public class MembersServiceImpl extends ServiceImpl<MembersMapper, Members> impl
             return false;
         }
         members.setMemberTypeName(MembershipType.getNameByCode(members.getMemberTypeId()));
-        members.setDeleteStatus(0);
         return super.save(members);
     }
 
     @Override
     public boolean remove(Members members) {
         //只修改删除状态
-        members.setDeleteStatus(1);
         boolean bool = super.updateById(members);
         return bool;
     }

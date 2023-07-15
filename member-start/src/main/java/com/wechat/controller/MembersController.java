@@ -118,7 +118,7 @@ public class MembersController {
         for (Members location : list) {
             double locationDistance = GeoUtils.calculateDistance(members.getLatitude(), members.getLongitude(), location.getLatitude(), location.getLongitude());
             if (locationDistance <= distance) {
-                return Response.failure(ResultCode.DUPLICATE_ENTRY);
+                return Response.failure(ResultCode.DISTANCE_PROTECTION_LIMIT);
             }
         }
 
@@ -142,11 +142,18 @@ public class MembersController {
             }
             double locationDistance = GeoUtils.calculateDistance(members.getLatitude(), members.getLongitude(), location.getLatitude(), location.getLongitude());
             if (locationDistance <= distance) {
-                return Response.failure(ResultCode.DUPLICATE_ENTRY);
+                return Response.failure(ResultCode.DISTANCE_PROTECTION_LIMIT);
             }
         }
 
         membersService.updateById(members);
+        return Response.success();
+    }
+
+    @ApiOperation(value = "删除会员")
+    @PostMapping(value = "/remove")
+    public Object remove(@RequestBody Members members) {
+        membersService.removeById(members);
         return Response.success();
     }
 

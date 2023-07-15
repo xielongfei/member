@@ -124,12 +124,6 @@ public class Members implements Serializable {
     private double longitude;
 
     /**
-     * 删除状态：0-未删除，1-已删除
-     */
-    @TableField("delete_status")
-    private Integer deleteStatus;
-
-    /**
      * 照片路径
      */
     @TableField("file_path")
