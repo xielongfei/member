@@ -107,7 +107,7 @@
                 FROM
                     check_in_records
                 WHERE
-                    check_in_date = CURDATE()
+                    DATE(check_in_date) = CURDATE()
             )
             <if test="search != null and search != ''">
                 and name like concat('%',#{search},'%') or shop_id like concat('%',#{search},'%')

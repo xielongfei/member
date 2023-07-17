@@ -13,6 +13,9 @@ import org.springframework.context.annotation.Bean;
 public class MemberApplication {
 
     public static void main(String[] args) {
+        // 设置系统属性
+        System.setProperty("java.awt.headless", "true");
+
         SpringApplication.run(MemberApplication.class, args);
     }
 
