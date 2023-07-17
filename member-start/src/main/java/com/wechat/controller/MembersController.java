@@ -14,12 +14,15 @@ import com.wechat.result.ResultCode;
 import com.wechat.service.IMembersService;
 import com.wechat.service.ISmsService;
 import com.wechat.sms.CacheUtil;
+import com.wechat.util.ExportUtils;
 import com.wechat.util.GeoUtils;
 import com.wechat.util.MenuUtil;
 import io.swagger.annotations.ApiOperation;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -208,4 +211,10 @@ public class MembersController {
         return Response.success();
     }
 
+    @ApiOperation(value = "会员导出")
+    @GetMapping("/export")
+    public void exportMembers(HttpServletResponse response) throws IOException {
+        List<Members> members = membersService.list();
+        ExportUtils.exportMembersToExcel(members, response);
+    }
 }
