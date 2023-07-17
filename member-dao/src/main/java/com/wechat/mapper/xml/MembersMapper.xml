@@ -79,8 +79,9 @@
             members m
                 INNER JOIN check_in_records c ON m.id = c.member_id
         <where>
+            DATE(c.check_in_date) = CURDATE()
             <if test="search != null and search != ''">
-                name like concat('%',#{search},'%') or shop_id like concat('%',#{search},'%')
+                and name like concat('%',#{search},'%') or shop_id like concat('%',#{search},'%')
             </if>
         </where>
     </select>
@@ -99,9 +100,15 @@
             2 AS check_in_status
         FROM
             members m
-                LEFT JOIN check_in_records c ON m.id = c.member_id
         WHERE
-            c.member_id IS NULL
+            m.id NOT IN (
+                SELECT
+                    member_id
+                FROM
+                    check_in_records
+                WHERE
+                    check_in_date = CURDATE()
+            )
             <if test="search != null and search != ''">
                 and name like concat('%',#{search},'%') or shop_id like concat('%',#{search},'%')
             </if>
