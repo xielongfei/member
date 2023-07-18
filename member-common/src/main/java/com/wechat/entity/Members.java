@@ -132,14 +132,14 @@ public class Members implements Serializable {
      */
     @TableField("latitude")
     @ExcelProperty(value = "纬度")
-    private double latitude;
+    private Double latitude;
 
     /**
      * 经度
      */
     @TableField("longitude")
     @ExcelProperty(value = "经度")
-    private double longitude;
+    private Double longitude;
 
     /**
      * 照片路径
