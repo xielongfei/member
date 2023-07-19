@@ -1,5 +1,7 @@
 package com.wechat.service;
 
+import com.wechat.entity.Members;
+
 /**
  * @author: xielongfei
  * @date: 2023/07/08
@@ -12,5 +14,20 @@ public interface ISmsService {
      * @param phoneNumber
      * @return
      */
-    boolean send(String phoneNumber);
+    boolean sendVerificationCode(String phoneNumber);
+
+    /**
+     * 给会员发送告警短信
+     * @param members
+     * @return
+     */
+    boolean sendMemberWarnMsg(Members members);
+
+    /**
+     * 给管理员发送告警短信
+     * @param members
+     * @return
+     */
+    boolean sendSuperWarnMsg(String phone, Members members);
+
 }

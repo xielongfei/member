@@ -39,6 +39,11 @@ import java.util.*;
 @RequestMapping("/members")
 public class MembersController {
 
+    /**
+     * 350米内只能出现一家店铺
+     */
+    public static final double distance = 0.35;
+
     @Autowired
     private IMembersService membersService;
 
@@ -58,9 +63,9 @@ public class MembersController {
     @PostMapping(value = "/login")
     public Object login(@RequestBody MembersRequest membersRequest) {
         String code = CacheUtil.cache.getIfPresent(membersRequest.getPhone());
-//        if (!Objects.equals(code, membersRequest.getVerificationCode())) {
-//            return Response.failure(ResultCode.UNAUTHORIZED);
-//        }
+        if (!Objects.equals(code, membersRequest.getVerificationCode())) {
+            return Response.failure(ResultCode.UNAUTHORIZED);
+        }
         Members members = membersService.getOne(Wrappers.<Members>lambdaQuery().eq(Members::getPhone, membersRequest.getPhone()));
         if (Objects.equals(1, members.getMemberTypeId()) || Objects.equals(2, members.getMemberTypeId())) {
             //31天未打卡禁止登录
@@ -80,7 +85,7 @@ public class MembersController {
     @ApiOperation("发送验证码")
     @PostMapping("/sendCode")
     public Object sendCode(@RequestBody Members members) {
-        boolean isSend = smsService.send(members.getPhone());
+        boolean isSend = smsService.sendVerificationCode(members.getPhone());
         if (isSend) {
             return Response.success();
         } else {
@@ -126,7 +131,6 @@ public class MembersController {
     public Object add(@RequestBody Members members) {
 
         List<Members> list = membersService.list();
-        double distance = 0.5; //500米内只能出现一家店铺
         for (Members location : list) {
             double locationDistance = GeoUtils.calculateDistance(members.getLatitude(), members.getLongitude(), location.getLatitude(), location.getLongitude());
             if (locationDistance <= distance) {
@@ -147,7 +151,6 @@ public class MembersController {
     public Object update(@RequestBody Members members) {
 
         List<Members> list = membersService.list();
-        double distance = 0.5; //500米内只能出现一家店铺
         for (Members location : list) {
             if (Objects.equals(members.getId(), location.getId())) {
                 continue;

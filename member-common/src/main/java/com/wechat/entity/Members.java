@@ -47,7 +47,7 @@ public class Members implements Serializable {
      * 加盟时间
      */
     @TableField("join_date")
-    @ExcelProperty(value = "加盟时间")
+    @ExcelProperty(value = "合作时间")
     private LocalDate joinDate;
 
     /**
