@@ -53,6 +53,18 @@ public class CheckInRecordsController {
 
         checkInRecords.setCheckInDate(LocalDateTime.now());
         //计算连续打卡次数
+        LocalDate yesterday = LocalDate.now().minusDays(1);
+        LocalDateTime yesStartDateTime = yesterday.atStartOfDay();
+        LocalDateTime yesEndDateTime = yesterday.atTime(23, 59, 59);
+        LambdaQueryWrapper yesWrapper = Wrappers.<CheckInRecords>lambdaQuery()
+                .eq(CheckInRecords::getMemberId, checkInRecords.getMemberId())
+                .between(CheckInRecords::getCheckInDate, yesStartDateTime, yesEndDateTime);
+        CheckInRecords yesRecords = checkInRecordsService.getOne(yesWrapper);
+        if (yesRecords != null) {
+            checkInRecords.setConsecutiveCheckIns(yesRecords.getConsecutiveCheckIns() + 1);
+        } else {
+            checkInRecords.setConsecutiveCheckIns(1);
+        }
         checkInRecordsService.save(checkInRecords);
         CheckInStat checkInStat = checkInRecordsService.countMemberCheckIn(checkInRecords);
 

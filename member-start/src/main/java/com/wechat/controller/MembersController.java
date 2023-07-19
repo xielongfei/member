@@ -3,6 +3,7 @@ package com.wechat.controller;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.wechat.entity.BasicInfo;
 import com.wechat.entity.Members;
 import com.wechat.entity.request.MembersRequest;
 import com.wechat.entity.response.MembersResponse;
@@ -11,6 +12,7 @@ import com.wechat.jwt.JwtTokenUtils;
 import com.wechat.mapper.MembersMapper;
 import com.wechat.result.Response;
 import com.wechat.result.ResultCode;
+import com.wechat.service.IBasicInfoService;
 import com.wechat.service.IMembersService;
 import com.wechat.service.ISmsService;
 import com.wechat.sms.CacheUtil;
@@ -20,6 +22,7 @@ import com.wechat.util.MenuUtil;
 import io.swagger.annotations.ApiOperation;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -52,6 +55,9 @@ public class MembersController {
 
     @Autowired
     private ISmsService smsService;
+
+    @Autowired
+    private IBasicInfoService basicInfoService;
 
     private final JwtTokenUtils jwtTokenUtils;
 
@@ -169,6 +175,13 @@ public class MembersController {
     @PostMapping(value = "/remove")
     public Object remove(@RequestBody Members members) {
         membersService.removeById(members);
+        //根据累计会员字段
+        List<BasicInfo> list = basicInfoService.list();
+        if (!CollectionUtils.isEmpty(list)) {
+            BasicInfo basicInfo = list.get(0);
+            basicInfo.setAccumulatedDeletedMembers(basicInfo.getAccumulatedDeletedMembers() + 1);
+            basicInfoService.updateById(basicInfo);
+        }
         return Response.success();
     }
 

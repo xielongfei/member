@@ -57,6 +57,12 @@ public class BasicInfo implements Serializable {
     @TableField(value = "map_key")
     private String mapKey;
 
+    /**
+     * 累计删除会员数
+     */
+    @TableField(value = "accumulated_deleted_members")
+    private Integer accumulatedDeletedMembers;
+
     @TableField("create_date")
     private LocalDateTime createDate;
 

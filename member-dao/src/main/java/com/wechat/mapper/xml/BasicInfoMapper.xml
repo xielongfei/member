@@ -11,11 +11,12 @@
         <result column="map_key" property="mapKey"/>
         <result column="create_date" property="createDate" />
         <result column="update_date" property="updateDate" />
+        <result column="accumulated_deleted_members" property="accumulatedDeletedMembers" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, customer_phone, material_contact, material_contact_qr_code, create_date, update_date, map_key
+        id, customer_phone, material_contact, material_contact_qr_code, create_date, update_date, map_key, accumulated_deleted_members
     </sql>
 
 </mapper>
