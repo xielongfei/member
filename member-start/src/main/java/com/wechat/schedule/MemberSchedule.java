@@ -1,14 +1,20 @@
 package com.wechat.schedule;
 
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONArray;
+import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.wechat.entity.BasicInfo;
 import com.wechat.entity.Members;
+import com.wechat.service.IBasicInfoService;
 import com.wechat.service.IMembersService;
 import com.wechat.service.ISmsService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -28,6 +34,9 @@ public class MemberSchedule {
 
     @Autowired
     private ISmsService smsService;
+
+    @Autowired
+    private IBasicInfoService basicInfoService;
 
     /**
      * 每天扫描31内未打卡得会员，警告次数+1，并给会员和管理员发送短信
@@ -55,4 +64,38 @@ public class MemberSchedule {
             log.error("告警任务异常：{}", e);
         }
     }
+
+    /**
+     * 刷新地图Map key
+     */
+    @Scheduled(cron = "0 0 1 * * ?") // 每天早上1点触发任务
+    public void refreshMapKey() {
+        try {
+            List<BasicInfo> list = basicInfoService.list();
+            if (!CollectionUtils.isEmpty(list)) {
+                BasicInfo basicInfo = list.get(0);
+
+                // 解析JSON字符串为JSONArray
+                JSONArray jsonArray = JSON.parseArray(basicInfo.getMapKey());
+
+                // 遍历JSONArray，修改每个JSONObject中的"limit"字段值为50
+                for (Object obj : jsonArray) {
+                    if (obj instanceof JSONObject) {
+                        JSONObject jsonObject = (JSONObject) obj;
+                        jsonObject.put("limit", 50);
+                    }
+                }
+
+                // 将修改后的JSONArray转换回JSON字符串
+                String modifiedJson = jsonArray.toJSONString();
+                basicInfo.setMapKey(modifiedJson);
+                basicInfoService.updateById(basicInfo);
+            }
+            log.info("刷新地图key完成");
+        } catch (Exception e) {
+            log.error("刷新地图异常：{}", e);
+        }
+    }
+
+    //控制短信频率
 }
