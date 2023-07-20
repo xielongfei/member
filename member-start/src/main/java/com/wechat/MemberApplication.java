@@ -7,9 +7,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication(scanBasePackages = { "com.wechat"}, exclude={RedisAutoConfiguration.class})
 @MapperScan("com.wechat.mapper")
+@EnableScheduling
 public class MemberApplication {
 
     public static void main(String[] args) {

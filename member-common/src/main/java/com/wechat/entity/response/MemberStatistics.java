@@ -46,7 +46,7 @@ public class MemberStatistics {
     private long maxCityCount;
 
     // 警告次数最多的会员
-    private long maxWarnCountMember;
+    private String maxWarnCountMember;
 
     // 处于警告中的人数
     private long warningMemberCount;

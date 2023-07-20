@@ -111,9 +111,13 @@ public class StatMember {
 
         // 11. 警告次数最多的会员
         LambdaQueryWrapper<Members> maxWarnCountQuery = Wrappers.lambdaQuery();
-        maxWarnCountQuery.orderByDesc(Members::getWarnCount).last("limit 1");
+        maxWarnCountQuery.gt(Members::getWarnCount, 0).orderByDesc(Members::getWarnCount).last("limit 1");
         Members maxWarnCountMember = membersService.getOne(maxWarnCountQuery);
-        statistics.setMaxWarnCountMember(maxWarnCountMember.getWarnCount());
+        if (maxWarnCountMember == null) {
+            statistics.setMaxWarnCountMember("-");
+        } else {
+            statistics.setMaxWarnCountMember(maxWarnCountMember.getName());
+        }
 
         // 12. 处于警告中的人数
         long warningMemberCount = membersService.count(Wrappers.<Members>lambdaQuery().eq(Members::getWarnStatus, 1));
