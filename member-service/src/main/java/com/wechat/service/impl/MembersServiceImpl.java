@@ -25,9 +25,11 @@ public class MembersServiceImpl extends ServiceImpl<MembersMapper, Members> impl
 
     @Override
     public boolean add(Members members){
+        boolean b = members.getIdCard() != null && members.getIdCard().length() > 0;
         LambdaQueryWrapper wrapper = Wrappers.<Members>lambdaQuery()
                 .eq(Members::getPhone, members.getPhone())
-                .or().eq(Members::getIdCard, members.getIdCard());
+                .or().eq(Members::getShopId, members.getShopId())
+                .func(b, f -> f.or().eq(Members::getIdCard, members.getIdCard()));
         Members membersDB = super.getOne(wrapper);
         if (membersDB != null) {
             return false;

@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -32,6 +33,9 @@ public class GlobalExceptionHandler {
         }
         if (ex instanceof NullPointerException) {
             resultCode = ResultCode.NULL_POINT;
+        }
+        if (ex instanceof DuplicateKeyException) {
+            resultCode = ResultCode.DUPLICATE_ENTRY;
         }
 
         // 设置响应的Content-Type为application/json

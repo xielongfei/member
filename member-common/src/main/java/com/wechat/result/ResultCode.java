@@ -25,7 +25,8 @@ public enum ResultCode {
     /*用户错误2001-2999*/
     CHECKED_IN(2001, "已打卡"),
     DUPLICATE_ENTRY(2002, "重复添加"),
-    DISTANCE_PROTECTION_LIMIT(2003, "保存失败，当前所选位置与他人店铺位置距离过近");
+    DISTANCE_PROTECTION_LIMIT(2003, "保存失败，当前所选位置与他人店铺位置距离过近"),
+    DUPLICATE_PHONE(2004, "身份证、手机号、商铺编号不能重复");
 
     private Integer code;
     private String message;

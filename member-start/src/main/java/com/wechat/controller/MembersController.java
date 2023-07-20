@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.wechat.entity.BasicInfo;
+import com.wechat.entity.CheckInRecords;
 import com.wechat.entity.Members;
 import com.wechat.entity.request.MembersRequest;
 import com.wechat.entity.response.MembersResponse;
@@ -13,6 +14,7 @@ import com.wechat.mapper.MembersMapper;
 import com.wechat.result.Response;
 import com.wechat.result.ResultCode;
 import com.wechat.service.IBasicInfoService;
+import com.wechat.service.ICheckInRecordsService;
 import com.wechat.service.IMembersService;
 import com.wechat.service.ISmsService;
 import com.wechat.sms.CacheUtil;
@@ -59,6 +61,9 @@ public class MembersController {
     @Autowired
     private IBasicInfoService basicInfoService;
 
+    @Autowired
+    private ICheckInRecordsService checkInRecordsService;
+
     private final JwtTokenUtils jwtTokenUtils;
 
     public MembersController(JwtTokenUtils jwtTokenUtils) {
@@ -73,6 +78,9 @@ public class MembersController {
             return Response.failure(ResultCode.UNAUTHORIZED);
         }
         Members members = membersService.getOne(Wrappers.<Members>lambdaQuery().eq(Members::getPhone, membersRequest.getPhone()));
+        if (members == null) {
+            return Response.failure(ResultCode.SC_FORBIDDEN);
+        }
         if (Objects.equals(1, members.getMemberTypeId()) || Objects.equals(2, members.getMemberTypeId())) {
             //31天未打卡禁止登录
             long daysDiff = ChronoUnit.DAYS.between(members.getWarnDate(), LocalDate.now());
@@ -148,7 +156,7 @@ public class MembersController {
         if (bool) {
             return Response.success();
         } else {
-            return Response.failure(ResultCode.PARAMS_IS_INVALID);
+            return Response.failure(ResultCode.DUPLICATE_PHONE);
         }
     }
 
@@ -161,12 +169,22 @@ public class MembersController {
             if (Objects.equals(members.getId(), location.getId())) {
                 continue;
             }
-            double locationDistance = GeoUtils.calculateDistance(members.getLatitude(), members.getLongitude(), location.getLatitude(), location.getLongitude());
-            if (locationDistance <= distance) {
-                return Response.failure(ResultCode.DISTANCE_PROTECTION_LIMIT);
+            if (members.getLatitude() != null && members.getLongitude() != null) {
+                double locationDistance = GeoUtils.calculateDistance(members.getLatitude(), members.getLongitude(), location.getLatitude(), location.getLongitude());
+                if (locationDistance <= distance) {
+                    return Response.failure(ResultCode.DISTANCE_PROTECTION_LIMIT);
+                }
             }
         }
-
+        boolean b = members.getIdCard() != null && members.getIdCard().length() > 0;
+        LambdaQueryWrapper wrapper = Wrappers.<Members>lambdaQuery()
+                .eq(Members::getPhone, members.getPhone())
+                .or().eq(Members::getShopId, members.getShopId())
+                .func(b, f -> f.or().eq(Members::getIdCard, members.getIdCard()));
+        Members membersDB = membersService.getOne(wrapper);
+        if (membersDB != null && !Objects.equals(membersDB.getId(), members.getId())) {
+            return Response.failure(ResultCode.DUPLICATE_PHONE);
+        }
         membersService.updateById(members);
         return Response.success();
     }
@@ -182,6 +200,8 @@ public class MembersController {
             basicInfo.setAccumulatedDeletedMembers(basicInfo.getAccumulatedDeletedMembers() + 1);
             basicInfoService.updateById(basicInfo);
         }
+        //删除会员打卡记录
+        checkInRecordsService.remove(Wrappers.<CheckInRecords>lambdaQuery().eq(CheckInRecords::getMemberId, members.getId()));
         return Response.success();
     }
 
@@ -206,7 +226,7 @@ public class MembersController {
         List<Members> nearbyLocations = new ArrayList<>();
 
         List<Members> list = membersService.list();
-        double distance = 2; //2km
+        double distance = 10; //10km
         for (Members location : list) {
             double locationDistance = GeoUtils.calculateDistance(latitude, longitude, location.getLatitude(), location.getLongitude());
             if (locationDistance <= distance) {

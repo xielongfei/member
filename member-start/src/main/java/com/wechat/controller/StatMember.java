@@ -136,8 +136,13 @@ public class StatMember {
                 .orderByDesc("checkInCount")
                 .last("limit 1");
         Map<String, Long> mostCheckInResult = checkInRecordsService.getMap(mostCheckInQuery);
-        statistics.setMostCheckInMember(membersService.getById(mostCheckInResult.get("memberId")).getName());
-        statistics.setMostCheckInCount(mostCheckInResult.get("checkInCount"));
+        if (mostCheckInResult != null) {
+            statistics.setMostCheckInMember(membersService.getById(mostCheckInResult.get("memberId")).getName());
+            statistics.setMostCheckInCount(mostCheckInResult.get("checkInCount"));
+        } else {
+            statistics.setMostCheckInMember("-");
+        }
+
 
         // 打卡次数最少的会员和次数
         QueryWrapper leastCheckInQuery = new QueryWrapper<CheckInRecords>().select("member_id as memberId", "COUNT(*) as checkInCount")
@@ -145,8 +150,12 @@ public class StatMember {
                 .orderByAsc("checkInCount")
                 .last("limit 1");
         Map<String, Long> leastCheckInResult = checkInRecordsService.getMap(leastCheckInQuery);
-        statistics.setLeastCheckInMember(membersService.getById(leastCheckInResult.get("memberId")).getName());
-        statistics.setLeastCheckInCount(leastCheckInResult.get("checkInCount"));
+        if (leastCheckInResult != null) {
+            statistics.setLeastCheckInMember(membersService.getById(leastCheckInResult.get("memberId")).getName());
+            statistics.setLeastCheckInCount(leastCheckInResult.get("checkInCount"));
+        } else {
+            statistics.setLeastCheckInMember("-");
+        }
 
         // 连续打卡次数最多的会员和次数
         QueryWrapper mostConsecutiveCheckInQuery = new QueryWrapper<CheckInRecords>().select("member_id as memberId", "MAX(consecutive_check_ins) as consecutiveCheckInCount")
@@ -154,10 +163,13 @@ public class StatMember {
                 .orderByDesc("consecutiveCheckInCount")
                 .last("limit 1");
         Map<String, Integer> mostConsecutiveCheckInResult = checkInRecordsService.getMap(mostConsecutiveCheckInQuery);
-        statistics.setMostConsecutiveCheckInMember(membersService.getById(mostConsecutiveCheckInResult.get("memberId")).getName());
-        Integer consecutiveCheckInCount = mostConsecutiveCheckInResult.get("consecutiveCheckInCount");
-        statistics.setMostConsecutiveCheckInCount(consecutiveCheckInCount == null ? 0 : consecutiveCheckInCount);
-
+        if (mostConsecutiveCheckInResult != null) {
+            statistics.setMostConsecutiveCheckInMember(membersService.getById(mostConsecutiveCheckInResult.get("memberId")).getName());
+            Integer consecutiveCheckInCount = mostConsecutiveCheckInResult.get("consecutiveCheckInCount");
+            statistics.setMostConsecutiveCheckInCount(consecutiveCheckInCount == null ? 0 : consecutiveCheckInCount);
+        } else {
+            statistics.setMostConsecutiveCheckInMember("-");
+        }
         return Response.success(statistics);
     }
 }
