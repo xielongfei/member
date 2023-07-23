@@ -3,7 +3,7 @@ spring:
     driverClassName: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://124.222.0.109/member_manage?autoReconnect=true&useSSL=false&serverTimezone=Asia/Shanghai&characterEncoding=utf8
     username: root
-    password: Chenye123
+    password: 123
     hikari:
       minimum-idle: 3
       maximum-pool-size: 10
