@@ -11,6 +11,7 @@
         <result column="original_price" property="originalPrice" />
         <result column="quantity" property="quantity" />
         <result column="image_url" property="imageUrl" />
+        <result column="tn_image_url" property="tnImageUrl" />
         <result column="create_date" property="createDate" />
         <result column="update_date" property="updateDate" />
     </resultMap>

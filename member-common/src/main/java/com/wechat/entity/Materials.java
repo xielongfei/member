@@ -62,10 +62,16 @@ public class Materials implements Serializable {
     private Integer quantity;
 
     /**
-     * 物料图片
+     * 物料图片（原图）
      */
     @TableField("image_url")
     private String imageUrl;
+
+    /**
+     * 物料图片（缩略图）
+     */
+    @TableField("tn_image_url")
+    private String tnImageUrl;
 
     @TableField("create_date")
     private LocalDateTime createDate;

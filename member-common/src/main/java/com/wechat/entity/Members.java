@@ -142,11 +142,18 @@ public class Members implements Serializable {
     private Double longitude;
 
     /**
-     * 照片路径
+     * 照片路径（原图）
      */
     @TableField("file_path")
     @ExcelIgnore
     private String filePath;
+
+    /**
+     * 缩略图路径
+     */
+    @TableField("tn_file_path")
+    @ExcelIgnore
+    private String tnFilePath;
 
     /**
      * 警告状态：0-非警告状态，1-警告状态

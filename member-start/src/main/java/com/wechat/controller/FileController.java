@@ -2,7 +2,6 @@ package com.wechat.controller;
 
 import com.wechat.result.Response;
 import com.wechat.result.ResultCode;
-import com.wechat.util.ConstantsUtil;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
@@ -14,9 +13,14 @@ import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @date: 2023/07/11
@@ -59,7 +63,41 @@ public class FileController {
         // 将文件保存到指定路径
         File dest = new File(filePath);
         FileCopyUtils.copy(file.getBytes(), dest);
-        return Response.success(filePath);
+
+        String thumbnailPath = storagePath + "/" + System.currentTimeMillis() + "_tn.jpg";
+        try {
+            BufferedImage originalImage = ImageIO.read(new File(filePath));
+            BufferedImage thumbnail = generateThumbnail(originalImage, 100, 100);
+            saveThumbnail(thumbnail, thumbnailPath);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("original", filePath);
+        map.put("thumbnail", thumbnailPath);
+        return Response.success(map);
+    }
+
+    /**
+     * 生成缩略图
+     * @param originalImage
+     * @param width
+     * @param height
+     * @return
+     */
+    public static BufferedImage generateThumbnail(BufferedImage originalImage, int width, int height) {
+        BufferedImage thumbnail = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        Graphics2D g2d = thumbnail.createGraphics();
+        g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+        g2d.drawImage(originalImage, 0, 0, width, height, null);
+        g2d.dispose();
+        return thumbnail;
+    }
+
+    public static void saveThumbnail(BufferedImage thumbnail, String outputPath) throws IOException {
+        String format = "jpg"; // You can choose other image formats like "PNG" or "GIF" if needed
+        ImageIO.write(thumbnail, format, new File(outputPath));
     }
 
     @ApiOperation(value = "获取图片")
@@ -79,5 +117,4 @@ public class FileController {
         // 返回图片资源和其他字段
         return ResponseEntity.ok().headers(headers).body(resource);
     }
-
 }

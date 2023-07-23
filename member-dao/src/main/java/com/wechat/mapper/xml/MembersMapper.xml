@@ -21,6 +21,7 @@
         <result column="latitude" property="latitude" />
         <result column="longitude" property="longitude" />
         <result column="file_path" property="filePath" />
+        <result column="tn_file_path" property="tnFilePath" />
         <result column="create_date" property="createDate" />
         <result column="update_date" property="updateDate" />
         <result column="warn_date" property="warnDate" />
@@ -31,7 +32,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, name, join_date, shop_id, referral_id, member_type_id, member_type_name, id_card, phone, province, city, county, address, full_address, latitude, longitude, file_path, create_date, update_date, warn_date, warn_status, warn_count
+        id, name, join_date, shop_id, referral_id, member_type_id, member_type_name, id_card, phone, province, city, county, address, full_address, latitude, longitude, file_path, tn_file_path, create_date, update_date, warn_date, warn_status, warn_count
     </sql>
 
     <select id="getAllMembersWithCheckInStatus" resultType="com.wechat.entity.response.MembersResponse">
@@ -45,6 +46,7 @@
             m.address,
             m.full_address,
             m.file_path,
+            m.tn_file_path,
             CASE
                 WHEN c.check_in_date IS NOT NULL THEN
                     1
@@ -74,6 +76,7 @@
             m.address,
             m.full_address,
             m.file_path,
+            m.tn_file_path,
             1 AS check_in_status
         FROM
             members m
@@ -97,6 +100,7 @@
             m.address,
             m.full_address,
             m.file_path,
+            m.tn_file_path,
             2 AS check_in_status
         FROM
             members m

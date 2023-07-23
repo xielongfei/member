@@ -7,7 +7,9 @@ import com.tencentcloudapi.common.profile.HttpProfile;
 import com.tencentcloudapi.sms.v20210111.SmsClient;
 import com.tencentcloudapi.sms.v20210111.models.SendSmsRequest;
 import com.tencentcloudapi.sms.v20210111.models.SendSmsResponse;
+import com.wechat.entity.BasicInfo;
 import com.wechat.entity.Members;
+import com.wechat.service.IBasicInfoService;
 import com.wechat.service.ISmsService;
 import com.wechat.sms.CacheUtil;
 import com.wechat.sms.SmsProperties;
@@ -15,10 +17,12 @@ import com.wechat.util.DateUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -32,12 +36,15 @@ public class SmsServiceImpl implements ISmsService {
     //验证码模板
     public static final String verificationCodeTemplateId = "1858174";
     //会员警告模板
-    public static final String memberWarnTemplateId = "1865609";
+    public static final String memberWarnTemplateId = "1873321";
     //管理员警告模板
     public static final String superWarnTemplateId = "1865610";
 
     @Autowired
     SmsProperties smsProperties;
+
+    @Autowired
+    private IBasicInfoService basicInfoService;
 
     @Override
     public boolean sendVerificationCode(String phone) {
@@ -55,10 +62,17 @@ public class SmsServiceImpl implements ISmsService {
 
     @Override
     public boolean sendMemberWarnMsg(Members members) {
+        String customer_phone = "未填";
+        List<BasicInfo> list = basicInfoService.list();
+        if (!CollectionUtils.isEmpty(list)) {
+            BasicInfo basicInfo = list.get(0);
+            customer_phone = basicInfo.getCustomerPhone();
+        }
+
         LocalDate warnDate = members.getWarnDate();
         String range = DateUtil.getMMDD(warnDate) + "~" + DateUtil.getMMDD(LocalDate.now());
         long daysDiff = ChronoUnit.DAYS.between(members.getWarnDate(), LocalDate.now());
-        String[] templateParamSet = {members.getShopId(), range, String.valueOf(daysDiff)};
+        String[] templateParamSet = {members.getShopId(), range, String.valueOf(daysDiff), customer_phone};
         boolean bool = this.send(members.getPhone(), memberWarnTemplateId, templateParamSet);
         return bool;
     }

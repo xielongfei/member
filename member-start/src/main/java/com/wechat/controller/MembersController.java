@@ -2,7 +2,9 @@ package com.wechat.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.wechat.entity.BasicInfo;
 import com.wechat.entity.CheckInRecords;
 import com.wechat.entity.Members;
@@ -29,7 +31,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 /**
@@ -82,11 +83,15 @@ public class MembersController {
             return Response.failure(ResultCode.SC_FORBIDDEN);
         }
         if (Objects.equals(1, members.getMemberTypeId()) || Objects.equals(2, members.getMemberTypeId())) {
-            //31天未打卡禁止登录
-            long daysDiff = ChronoUnit.DAYS.between(members.getWarnDate(), LocalDate.now());
-            if (daysDiff >= 31) {
+            //警告状态下禁止登录
+            if (Objects.equals(members.getWarnStatus(), 1)) {
                 return Response.failure(ResultCode.SC_FORBIDDEN);
             }
+//            //31天未打卡禁止登录
+//            long daysDiff = ChronoUnit.DAYS.between(members.getWarnDate(), LocalDate.now());
+//            if (daysDiff >= 31) {
+//                return Response.failure(ResultCode.SC_FORBIDDEN);
+//            }
         }
         Map<String, Object> claims = new HashMap<>();
         claims.put("member", members);
@@ -118,16 +123,18 @@ public class MembersController {
 
     @ApiOperation(value = "查会员列表")
     @GetMapping(value = "/list")
-    public Object list(MembersRequest membersRequest) {
-        List<MembersResponse> list;
+    public Object list(Page page, MembersRequest membersRequest) {
+        IPage iPage;
+        //List<MembersResponse> list;
         if (Objects.equals(membersRequest.getCheckInTab(), 1)) {
-            list = membersMapper.getCheckedInMembers(membersRequest.getSearch());
+            iPage = membersMapper.getCheckedInMembers(page, membersRequest.getSearch());
         } else if (Objects.equals(membersRequest.getCheckInTab(), 2)) {
-            list = membersMapper.getNotCheckedInMembers(membersRequest.getSearch());
+            iPage = membersMapper.getNotCheckedInMembers(page, membersRequest.getSearch());
         } else {
-            list = membersMapper.getAllMembersWithCheckInStatus(membersRequest.getSearch());
+            iPage = membersMapper.getAllMembersWithCheckInStatus(page, membersRequest.getSearch());
         }
-        return Response.success(list);
+
+        return Response.success(iPage);
     }
 
     @ApiOperation(value = "姓名或编号模糊搜索会员")
@@ -226,7 +233,7 @@ public class MembersController {
         List<Members> nearbyLocations = new ArrayList<>();
 
         List<Members> list = membersService.list();
-        double distance = 10; //10km
+        double distance = 2; //2km
         for (Members location : list) {
             double locationDistance = GeoUtils.calculateDistance(latitude, longitude, location.getLatitude(), location.getLongitude());
             if (locationDistance <= distance) {
@@ -239,10 +246,11 @@ public class MembersController {
     @ApiOperation(value = "解除告警")
     @PostMapping(value = "/disableWarning")
     public Object disableWarning(@RequestBody Members members) {
+        boolean b = members.getShopId() != null && members.getShopId().length() > 0;
         LambdaUpdateWrapper wrapper = Wrappers.<Members>lambdaUpdate()
                 .set(Members::getWarnStatus, 0)
                 .set(Members::getWarnDate, LocalDate.now())
-                .eq(Members::getShopId, members.getShopId());
+                .func(b, f -> f.eq(Members::getShopId, members.getShopId()));
         membersService.update(wrapper);
         return Response.success();
     }
