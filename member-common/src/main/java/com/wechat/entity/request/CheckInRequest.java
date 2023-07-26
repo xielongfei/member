@@ -12,7 +12,13 @@ import lombok.Data;
 public class CheckInRequest extends CheckInRecords {
 
     /**
-     * 打卡月份搜索
+     * 打卡月份搜索 %Y-%m
+     *
      */
     private String checkInMonth;
+
+    /**
+     * 打卡日期搜索 %Y-%m-%d
+     */
+    private String searchCheckInDate;
 }

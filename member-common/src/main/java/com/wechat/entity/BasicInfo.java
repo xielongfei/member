@@ -63,6 +63,12 @@ public class BasicInfo implements Serializable {
     @TableField(value = "accumulated_deleted_members")
     private Integer accumulatedDeletedMembers;
 
+    /**
+     * 通知文案
+     */
+    @TableField(value = "notify_text")
+    private String notifyText;
+
     @TableField("create_date")
     private LocalDateTime createDate;
 

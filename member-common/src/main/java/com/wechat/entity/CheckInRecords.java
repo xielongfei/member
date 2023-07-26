@@ -78,6 +78,18 @@ public class CheckInRecords implements Serializable {
     @TableField("full_address")
     private String fullAddress;
 
+    /**
+     * 打卡图片（原图）
+     */
+    @TableField("image_url")
+    private String imageUrl;
+
+    /**
+     * 打卡图片（缩略图）
+     */
+    @TableField("tn_image_url")
+    private String tnImageUrl;
+
     @TableField("create_date")
     private LocalDateTime createDate;
 

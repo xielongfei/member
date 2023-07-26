@@ -18,7 +18,7 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, name, description, selling_price, original_price, quantity, image_url, create_date, update_date
+        id, name, description, selling_price, original_price, quantity, image_url, tn_image_url, create_date, update_date
     </sql>
 
 </mapper>

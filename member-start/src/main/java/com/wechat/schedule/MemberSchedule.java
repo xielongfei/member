@@ -107,4 +107,6 @@ public class MemberSchedule {
     }
 
     //控制短信频率
+
+    //定时任务凌晨删除文件夹
 }

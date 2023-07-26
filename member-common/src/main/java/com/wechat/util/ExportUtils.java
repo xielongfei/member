@@ -3,6 +3,7 @@ package com.wechat.util;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.write.builder.ExcelWriterBuilder;
 import com.alibaba.excel.write.builder.ExcelWriterSheetBuilder;
+import com.wechat.entity.CheckInRecords;
 import com.wechat.entity.Members;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -26,6 +27,13 @@ public class ExportUtils {
         ExcelWriterBuilder writerBuilder = EasyExcel.write(response.getOutputStream(), Members.class);
         ExcelWriterSheetBuilder sheetBuilder = writerBuilder.sheet();
         sheetBuilder.doWrite(members);
+        writerBuilder.build().finish();
+    }
+
+    public static void exportCheckInToExcel(List<CheckInRecords> records, String filePath) {
+        ExcelWriterBuilder writerBuilder = EasyExcel.write(filePath, CheckInRecords.class);
+        ExcelWriterSheetBuilder sheetBuilder = writerBuilder.sheet();
+        sheetBuilder.doWrite(records);
         writerBuilder.build().finish();
     }
 }
