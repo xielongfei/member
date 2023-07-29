@@ -6,8 +6,10 @@ import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.wechat.entity.BasicInfo;
+import com.wechat.entity.CheckLink;
 import com.wechat.entity.Members;
 import com.wechat.service.IBasicInfoService;
+import com.wechat.service.ICheckLinkService;
 import com.wechat.service.IMembersService;
 import com.wechat.service.ISmsService;
 import lombok.extern.slf4j.Slf4j;
@@ -16,9 +18,12 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
+import java.io.File;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @date: 2023/07/15
@@ -37,6 +42,9 @@ public class MemberSchedule {
 
     @Autowired
     private IBasicInfoService basicInfoService;
+
+    @Autowired
+    private ICheckLinkService linkService;
 
     /**
      * 每天扫描31内未打卡得会员
@@ -108,5 +116,38 @@ public class MemberSchedule {
 
     //控制短信频率
 
-    //定时任务凌晨删除文件夹
+    /**
+     * 定时任务凌晨删除文件夹
+     */
+    @Scheduled(cron = "0 30 0 * * ?") // 每天早上1点触发任务
+    public void refreshFolder() {
+        LambdaQueryWrapper wrappers = Wrappers.<CheckLink>lambdaQuery().gt(CheckLink::getCreateDate, LocalDateTime.now().withHour(0).withMinute(0));
+        List<CheckLink> list = linkService.list(wrappers);
+        if (list.size() == 0) {
+            //清空数据库
+            linkService.removeBatchByIds(list.stream().map(CheckLink::getId).collect(Collectors.toList()));
+            //删除文件夹
+            String directoryPath = "/images/checkIn";
+            // 调用清空目录的方法
+            clearDirectory(new File(directoryPath));
+        }
+    }
+
+    /**
+     * 清空文件夹
+     * @param directory
+     */
+    public static void clearDirectory(File directory) {
+        if (directory.isDirectory()) {
+            File[] files = directory.listFiles();
+            if (files != null) {
+                for (File file : files) {
+                    // 递归清空子目录和文件
+                    clearDirectory(file);
+                }
+            }
+        }
+        // 删除文件或空目录
+        directory.delete();
+    }
 }

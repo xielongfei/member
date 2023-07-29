@@ -42,6 +42,12 @@ public class CheckLink implements Serializable {
     @TableField("count")
     private Integer count;
 
+    /**
+     * 导出日期
+     */
+    @TableField("export_date")
+    private String exportDate;
+
     @TableField("create_date")
     private LocalDateTime createDate;
 

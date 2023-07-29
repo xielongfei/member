@@ -9,11 +9,12 @@
         <result column="count" property="count" />
         <result column="create_date" property="createDate" />
         <result column="update_date" property="updateDate" />
+        <result column="export_date" property="exportDate" />
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, link, count, create_date, update_date
+        id, link, count, create_date, update_date, export_date
     </sql>
 
 </mapper>

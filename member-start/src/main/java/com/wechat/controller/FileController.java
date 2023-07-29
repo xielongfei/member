@@ -117,4 +117,22 @@ public class FileController {
         // 返回图片资源和其他字段
         return ResponseEntity.ok().headers(headers).body(resource);
     }
+
+    @ApiOperation(value = "获取文件")
+    @GetMapping("/images/checkIn/{date}/{filename:.+}")
+    public ResponseEntity file(@PathVariable String date, @PathVariable String filename) {
+        // 创建文件资源
+        Resource resource = new FileSystemResource("/images/checkIn" + "/" + date + "/" + filename);
+        // 检查文件是否存在
+        if (!resource.exists()) {
+            // 处理文件不存在的情况，返回404错误
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        }
+        // 设置响应头
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=" + resource.getFilename());
+        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM); // 设置Content-Type为image/jpeg
+        // 返回图片资源和其他字段
+        return ResponseEntity.ok().headers(headers).body(resource);
+    }
 }

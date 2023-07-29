@@ -3,11 +3,13 @@ package com.wechat.controller;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.wechat.entity.CheckInRecords;
+import com.wechat.entity.CheckLink;
 import com.wechat.entity.Members;
 import com.wechat.entity.request.CheckInRequest;
 import com.wechat.result.Response;
 import com.wechat.result.ResultCode;
 import com.wechat.service.ICheckInRecordsService;
+import com.wechat.service.ICheckLinkService;
 import com.wechat.service.IMembersService;
 import com.wechat.util.DateUtil;
 import io.swagger.annotations.ApiOperation;
@@ -19,7 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -29,6 +31,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -41,7 +44,7 @@ import java.util.zip.ZipOutputStream;
  * @author 
  * @since 2023-07-25
  */
-@Controller
+@RestController
 @RequestMapping("/checkLink")
 public class CheckLinkController {
 
@@ -51,13 +54,26 @@ public class CheckLinkController {
     @Autowired
     private IMembersService membersService;
 
+    @Autowired
+    private ICheckLinkService linkService;
+
     @ApiOperation(value = "导出")
     @GetMapping(value = "/export")
     public Object export(CheckInRequest inRequest) {
-        //先查数据库，是否存在记录，存在返回链接，不存在生成链接并+1
-
         boolean isCheckInMonth = StringUtils.hasLength(inRequest.getCheckInMonth());
         boolean isSearchCheckInDate = StringUtils.hasLength(inRequest.getSearchCheckInDate());
+        String param = isCheckInMonth ? inRequest.getCheckInMonth() : inRequest.getSearchCheckInDate();
+        //先查数据库，是否存在记录，存在返回链接，不存在生成链接并+1
+        CheckLink link = linkService.getOne(Wrappers.<CheckLink>lambdaQuery().eq(CheckLink::getExportDate, param));
+        if (link != null) {
+            if (Objects.equals(link.getCount(), 3)) {
+                return Response.failure(ResultCode.SC_FORBIDDEN);
+            }
+            link.setCount(link.getCount() + 1);
+            linkService.updateById(link);
+            return Response.success(link.getLink());
+        }
+
         LambdaQueryWrapper wrapper = Wrappers.<CheckInRecords>lambdaQuery()
                 .func(isCheckInMonth,
                         f -> f.apply("DATE_FORMAT(check_in_date, '%Y-%m') = {0}", inRequest.getCheckInMonth()))
@@ -67,7 +83,7 @@ public class CheckLinkController {
         if (list.size() == 0) {
             return Response.failure(ResultCode.NOT_FOUND);
         }
-        String param = isCheckInMonth ? inRequest.getCheckInMonth() : inRequest.getSearchCheckInDate();
+
         //原始路径
         String originPath;
         String osName = System.getProperty("os.name");
@@ -78,8 +94,14 @@ public class CheckLinkController {
         }
 
         //循环压缩
-        exportCheckInRecords(list, originPath + File.separator + param, param);
-        return Response.success();
+       String zipFileName = exportCheckInRecords(list, originPath + File.separator + param, param);
+
+        CheckLink checkLink = new CheckLink();
+        checkLink.setLink(zipFileName);
+        checkLink.setCount(1);
+        checkLink.setExportDate(param);
+        linkService.save(checkLink);
+        return Response.success(zipFileName);
     }
 
     /**
@@ -88,7 +110,7 @@ public class CheckLinkController {
      * @param outputFolder
      * @param param
      */
-    public void exportCheckInRecords(List<CheckInRecords> list, String outputFolder, String param) {
+    public String exportCheckInRecords(List<CheckInRecords> list, String outputFolder, String param) {
 
         // 使用Stream API根据会员ID分组
         Map<Integer, List<CheckInRecords>> groupedByMemberId = list.stream()
@@ -136,8 +158,8 @@ public class CheckLinkController {
         }
 
         // 最终将所有会员文件夹打包为一个 ZIP 文件
+        String zipFileName = String.format("%s%s打卡信息_%s.zip", outputFolder, File.separator, param);
         try {
-            String zipFileName = String.format("%s%s打卡信息_%s.zip", outputFolder, File.separator, param);
             Path sourcePath = Paths.get(outputFolder);
             Path targetPath = Paths.get(zipFileName);
 
@@ -158,6 +180,7 @@ public class CheckLinkController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return zipFileName;
     }
 
     /**

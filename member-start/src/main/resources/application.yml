@@ -13,10 +13,16 @@ spring:
   servlet:
     multipart:
       enabled: true
+      max-file-size: 100MB
+      max-request-size: 100MB
   port: 8080
 
 service:
   url: http://127.0.0.1:8080/file
+
+java:
+  awt:
+    headless: true
 
 #jwt
 jwt:

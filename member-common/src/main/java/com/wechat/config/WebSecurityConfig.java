@@ -66,6 +66,7 @@ public class WebSecurityConfig {
 
                 // 放行文件访问
                 .requestMatchers("/file/images/**").permitAll()
+                .requestMatchers("/file/images/checkIn/**").permitAll()
 
                 // 放行静态资源
                 .requestMatchers(HttpMethod.GET,
