@@ -148,6 +148,6 @@ public class MemberSchedule {
             }
         }
         // 删除文件或空目录
-        directory.delete();
+        //directory.delete();
     }
 }
