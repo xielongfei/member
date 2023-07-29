@@ -18,6 +18,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
@@ -120,9 +121,10 @@ public class FileController {
 
     @ApiOperation(value = "获取文件")
     @GetMapping("/images/checkIn/{date}/{filename:.+}")
-    public ResponseEntity file(@PathVariable String date, @PathVariable String filename) {
+    public ResponseEntity file(@PathVariable String date, @PathVariable String filename) throws Exception {
+
         // 创建文件资源
-        Resource resource = new FileSystemResource("/images/checkIn" + "/" + date + "/" + filename);
+        Resource resource = new FileSystemResource("/images/checkIn" + "/" + date + "/" + URLEncoder.encode(filename, "UTF-8"));
         // 检查文件是否存在
         if (!resource.exists()) {
             // 处理文件不存在的情况，返回404错误
