@@ -119,13 +119,14 @@ public class MemberSchedule {
     /**
      * 定时任务凌晨删除文件夹
      */
-    @Scheduled(cron = "0 30 0 * * ?") // 每天早上1点触发任务
+    @Scheduled(cron = "0 30 0 * * ?") // 每天0点30分触发任务
     public void refreshFolder() {
         LambdaQueryWrapper wrappers = Wrappers.<CheckLink>lambdaQuery().gt(CheckLink::getCreateDate, LocalDateTime.now().withHour(0).withMinute(0));
         List<CheckLink> list = linkService.list(wrappers);
         if (list.size() == 0) {
             //清空数据库
-            linkService.removeBatchByIds(list.stream().map(CheckLink::getId).collect(Collectors.toList()));
+            List<CheckLink> checkLinkList = linkService.list();
+            linkService.removeBatchByIds(checkLinkList.stream().map(CheckLink::getId).collect(Collectors.toList()));
             //删除文件夹
             String directoryPath = "/images/checkIn";
             // 调用清空目录的方法
