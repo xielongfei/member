@@ -53,7 +53,7 @@ public class MemberSchedule {
      * 3. 警告日期重置
      * 4. 并给会员和管理员发送短信
      */
-    @Scheduled(cron = "0 0 8 * * ?") // 每天早上8点触发任务
+    //@Scheduled(cron = "0 0 8 * * ?") // 每天早上8点触发任务
     public void scanAndSendNotifications() {
         try {
             Thread.sleep(10000);
@@ -65,16 +65,16 @@ public class MemberSchedule {
                     .le(Members::getWarnDate, LocalDate.now().minusDays(31));
             List<Members> list = membersService.list(wrapper);
             for (Members members : list) {
-                members.setWarnCount(members.getWarnCount() + 1);
-                members.setWarnStatus(1);
-                members.setWarnDate(LocalDate.now());
-                membersService.updateById(members);
-
                 smsService.sendMemberWarnMsg(members);
 
                 superMember.stream().forEach(e -> {
                     smsService.sendSuperWarnMsg(e.getPhone(), members);
                 });
+
+                members.setWarnCount(members.getWarnCount() + 1);
+                members.setWarnStatus(1);
+                members.setWarnDate(LocalDate.now());
+                membersService.updateById(members);
             }
             log.info("告警短信处理完毕, 共处理会员：{}个", list.size());
         } catch (Exception e) {
