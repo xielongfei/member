@@ -31,8 +31,8 @@ jwt:
   token-start-with: Bearer
   # 使用Base64对该令牌进行编码
   base64-secret: MTIzNDU2Nzg5MHF3ZXJ0eXVpb3Bhc2RmZ2hqa2x6eGN2Ym5t
-  # 令牌过期时间 此处单位/毫秒
-  token-validity-in-seconds: 259200000
+  # 令牌过期时间 25天 此处单位/毫秒
+  token-validity-in-seconds: 2160000000
 
 
 tencent:
@@ -42,7 +42,7 @@ tencent:
     secretId: 123
     secretKey: 123
     #短信签名内容: 使用 UTF-8 编码，必须填写已审核通过的签名
-    signName: '盛唐Dev个人公众号'
+    signName: '陕西盛放御选餐饮'
     #短信应用ID: 短信SdkAppId在 [短信控制台] 添加应用后生成的实际SdkAppId
     sdkAppId: 1400837331
     #模板 ID: 必须填写已审核通过的模板 ID
